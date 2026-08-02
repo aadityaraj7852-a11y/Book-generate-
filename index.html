@@ -16,6 +16,10 @@
   <!-- TinyMCE Rich Text Editor (Word-like features) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
 
+  <!-- PDF Generation Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
   <script>
     window.MathJax = {
       tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
@@ -27,6 +31,8 @@
   <style>
     :root {
         --pdf-font: 'Mukta', sans-serif;
+        --page-width: 794px;
+        --page-height: 1123px;
         --wm-rot: -45deg; --wm-scale: 1.5; --wm-op: 0.12;
     }
     
@@ -63,7 +69,8 @@
 
     #containerA .preview-area { background: white; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); padding: 20px; overflow-x: auto; scroll-behavior: smooth; }
     
-    #containerA .page { width: 794px; height: 1123px; background: white; margin: 20px auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; line-height: 1.4; font-family: var(--pdf-font) !important; font-size: 15px; }
+    /* PDF PAGE LAYOUT */
+    #containerA .page { width: var(--page-width); height: var(--page-height); background: white; margin: 20px auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; line-height: 1.4; font-family: var(--pdf-font) !important; font-size: 15px; transition: all 0.3s ease;}
 
     #containerA .watermark { position: absolute; top: 50%; left: 50%; width: 350px; transform: translate(-50%, -50%) rotate(var(--wm-rot)) scale(var(--wm-scale)); opacity: var(--wm-op); z-index: 9999; pointer-events: none; }
 
@@ -105,15 +112,6 @@
     #containerA .index-page th, #containerA .index-page td { border: 1px solid #888; padding: 10px; text-align: center; }
     #containerA .index-page th { background: #d0d0d0; font-weight: bold; }
     #containerA .index-page td:nth-child(2) { text-align: left; padding-left: 18px; }
-
-    @media print {
-        body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .dashboard-grid, h1 { display: none !important; }
-        #containerA { padding: 0 !important; }
-        .preview-area { padding: 0 !important; margin: 0 !important; box-shadow: none !important; background: transparent !important; overflow: visible !important; }
-        .page { margin: 0 auto !important; box-shadow: none !important; border: none !important; page-break-after: always; }
-        .watermark { opacity: var(--wm-op) !important; }
-    }
   </style>
 </head>
 <body>
@@ -124,6 +122,7 @@
 
       <div class="dashboard-grid">
         
+        <!-- LEFT PANEL -->
         <div class="panel">
           <div class="form-group" style="background: #f8fafc; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 8px; margin-bottom: 20px;">
             <label><i class="fas fa-heading"></i> हेडर ब्रांडिंग (Header Branding)</label>
@@ -163,6 +162,7 @@
           </div>
         </div>
 
+        <!-- RIGHT PANEL -->
         <div class="panel">
           
           <details class="chapter-dropdown" open>
@@ -178,6 +178,23 @@
           <div class="form-group" style="background: #eff6ff; padding: 12px; border: 1px solid #93c5fd; border-radius: 8px;">
             <label style="color:#1e3a8a; font-size:16px;"><i class="fas fa-cog"></i> बुक सेटिंग्स</label>
             
+            <div style="margin-top:10px; display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label style="font-size: 13px; color:#475569; font-weight: normal;">Paper Size:</label>
+                    <select id="paperSize" class="form-control" onchange="updateSettings()" style="padding:6px; font-size:13px;">
+                        <option value="A4">A4 (Standard Book)</option>
+                        <option value="A5">A5 (Pocket Book)</option>
+                    </select>
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size: 13px; color:#475569; font-weight: normal;">Ans Key Format:</label>
+                    <select id="ansStyle" class="form-control" onchange="updateSettings()" style="padding:6px; font-size:13px;">
+                        <option value="inline">प्रश्न के ठीक नीचे</option>
+                        <option value="end">चैप्टर के अंत में</option>
+                    </select>
+                </div>
+            </div>
+
             <div style="margin-top:10px;">
                 <label style="font-size: 13px; color:#475569; font-weight: normal;">Hindi Font (फ़ॉन्ट चुनें):</label>
                 <select id="pdfFont" class="form-control" onchange="updateSettings()" style="padding:6px; font-size:13px; font-family:inherit;">
@@ -188,14 +205,6 @@
                     <option value="'Rozha One', serif">5. Rozha One (Thick Serif)</option>
                     <option value="'Noto Sans Devanagari', sans-serif">6. Noto Sans (Google)</option>
                     <option value="'Tiro Devanagari Hindi', serif">7. Tiro Devanagari (Classic)</option>
-                </select>
-            </div>
-
-            <div style="margin-top:10px;">
-                <label style="font-size: 13px; color:#475569; font-weight: normal;">Answer Key Position:</label>
-                <select id="ansStyle" class="form-control" onchange="updateSettings()" style="padding:6px; font-size:13px;">
-                    <option value="inline">प्रश्न के ठीक नीचे (Inline)</option>
-                    <option value="end">चैप्टर के अंत में (Answer Key)</option>
                 </select>
             </div>
           </div>
@@ -230,8 +239,9 @@
             
             <button class="btn btn-primary" onclick="previewBook()" style="font-size:15px; padding:12px;"><i class="fas fa-eye"></i> Preview Book</button>
             
-            <button class="btn btn-success" onclick="window.print()" style="font-size: 15px; padding:12px;">
-                <i class="fas fa-file-pdf"></i> Download PDF (Selectable Text)
+            <!-- PERFECT 1-CLICK DOWNLOAD BUTTON -->
+            <button class="btn btn-success" onclick="generateOptimizedPDF()" id="pdfBtn" style="font-size: 16px; padding:12px; background: #059669;">
+                <i class="fas fa-file-pdf"></i> Download PDF (1-Click)
             </button>
             
             <button class="btn btn-danger" onclick="clearAll()"><i class="fas fa-trash"></i> सब डिलीट करें</button>
@@ -249,21 +259,15 @@
 // ==========================================
 function convertEditorDevlys() {
     let editorContent = tinymce.get('chapNotes').getContent();
-    if(!editorContent || editorContent.trim() === "") {
-        alert("एडिटर खाली है! पहले MS Word से Devlys (KrutiDev) वाला टेक्स्ट पेस्ट करें।");
-        return;
-    }
+    if(!editorContent || editorContent.trim() === "") { alert("एडिटर खाली है! पहले MS Word से Devlys (KrutiDev) वाला टेक्स्ट पेस्ट करें।"); return; }
     
-    // Create DOM tree to safely convert ONLY text nodes (preserving Tables, Images, Bold, etc.)
     let temp = document.createElement('div');
     temp.innerHTML = editorContent;
     
     let walk = document.createTreeWalker(temp, NodeFilter.SHOW_TEXT, null, false);
     let node;
     while(node = walk.nextNode()) {
-        if(node.nodeValue.trim() !== "") {
-            node.nodeValue = krutiToUnicode(node.nodeValue);
-        }
+        if(node.nodeValue.trim() !== "") { node.nodeValue = krutiToUnicode(node.nodeValue); }
     }
     
     tinymce.get('chapNotes').setContent(temp.innerHTML);
@@ -272,16 +276,12 @@ function convertEditorDevlys() {
 
 function krutiToUnicode(text) {
     if(!text) return text;
-    // Standard Kruti Dev 010 to Unicode Map Arrays
     var array_one = ["ñ","Q+Z","sas","aa",")Z","ZZ","‘","’","“","”","å","ƒ","„","…","†","‡","ˆ","‰","Š","‹","¶+","d+","[+k","[+","x+","T+","t+","M+","<+","Q+",";+","j+","u+","Ùk","Ù","ä","–","—","é","™","=kk","f=k","EY","£","x","X","c","C","v","V","y","Y","p","P","d","D","q","Q","a","A","s","S","W","w","i","I","u","U","o","O","t","T","m","M","l","L","g","G","k","K","h","H","j","J","f","F","z","Z","¢","´","~","`","!","@","#","$","%","^","&","*","(",")","-","_","+","=","|","\\","{","}","[","]",":",";","\"","'","<",">",",",".","?","/"];
     var array_two = ["र्त्त","QZ+","sa","a","र्द्ध","Z","\"","\"","'","'","०","१","२","३","४","५","६","७","८","९","फ़्","क़","ख़","ख़्","ग़","ज़","ज़्","ड़","ढ़","फ़","य़","ऱ","ऩ","त्त","त्त्","क्त","दृ","कृ","न्न","न्न्","=k","f=","ल्ल","रु","ग","ग्","ब","ब्","अ","ट","ल","ल्","च","च्","क","क्","उ","ऊ","ं","ँ","े","ै","ै","ू","ि","ी","न","न्","व","व्","ज","ज्","म","म्","स","स्","ह","ह्","ा","क्ष","हृ","ृ","र","र्","ि","्","्र","्","ऽ","ॐ","्","्","!","@","#","$","%","^","&","*","(",")","-","_","+","=","|","\\","{","}","[","]",":",";","\"","'","<",">",",",".","?","/"];
     
     let modified_substring = text;
-    for (let i = 0; i < array_one.length; i++) {
-        modified_substring = modified_substring.split(array_one[i]).join(array_two[i]);
-    }
+    for (let i = 0; i < array_one.length; i++) { modified_substring = modified_substring.split(array_one[i]).join(array_two[i]); }
     
-    // Shift 'f' (Chhoti Ee ki Matra) to correct side
     var position_of_i = modified_substring.indexOf("f");
     while (position_of_i !== -1) {
         var character_next_to_i = modified_substring.charAt(position_of_i + 1);
@@ -290,7 +290,6 @@ function krutiToUnicode(text) {
         position_of_i = modified_substring.indexOf("f", position_of_i + 1);
     }
     
-    // Shift 'Z' (Half R / Ref)
     var position_of_R = modified_substring.indexOf("Z");
     while (position_of_R > 0) {
         var character_previous_to_R = modified_substring.charAt(position_of_R - 1);
@@ -299,10 +298,8 @@ function krutiToUnicode(text) {
         position_of_R = modified_substring.indexOf("Z", position_of_R - 1);
     }
 
-    // Fix double matras overlapping
     modified_substring = modified_substring.replace(/ाे/g, "ो");
     modified_substring = modified_substring.replace(/ाै/g, "ौ");
-    
     return modified_substring;
 }
 
@@ -321,9 +318,7 @@ tinymce.init({
     resolve("data:" + blobInfo.blob().type + ";base64," + blobInfo.base64());
   }),
   setup: function (editor) {
-    editor.on('init', function (e) {
-      loadFromLocal();
-    });
+    editor.on('init', function (e) { loadFromLocal(); });
   }
 });
 
@@ -367,6 +362,10 @@ function importProject(event) {
 }
 
 function updateSettings() {
+    const pSize = document.getElementById('paperSize').value;
+    document.documentElement.style.setProperty('--page-width', pSize === 'A4' ? '794px' : '559px');
+    document.documentElement.style.setProperty('--page-height', pSize === 'A4' ? '1123px' : '794px');
+
     const rot = document.getElementById('wmRotation').value;
     const zoom = document.getElementById('wmZoom').value;
     const op = document.getElementById('wmOpacity').value;
@@ -399,6 +398,7 @@ function saveToLocal() {
     localStorage.setItem('mockriseBrand', document.getElementById('brandText').value);
     localStorage.setItem('m_ans', document.getElementById('ansStyle').value);
     localStorage.setItem('m_font', document.getElementById('pdfFont').value);
+    localStorage.setItem('m_psize', document.getElementById('paperSize').value);
 }
 
 function loadFromLocal() {
@@ -413,6 +413,7 @@ function loadFromLocal() {
     if (localStorage.getItem('wmOp') !== null) document.getElementById('wmOpacity').value = localStorage.getItem('wmOp');
     if (localStorage.getItem('m_ans')) document.getElementById('ansStyle').value = localStorage.getItem('m_ans');
     if (localStorage.getItem('m_font')) document.getElementById('pdfFont').value = localStorage.getItem('m_font');
+    if (localStorage.getItem('m_psize')) document.getElementById('paperSize').value = localStorage.getItem('m_psize');
 
     updateSettings(); updateChapterUI();
     if(bookData.chapters.length > 0) previewBook();
@@ -671,6 +672,66 @@ function previewBook() {
     const indexPage = createIndexPage(chapterPages); preview.insertBefore(indexPage, preview.firstChild);
 
     if (window.MathJax) { MathJax.typesetPromise([preview]).catch((err) => console.log('MathJax Error:', err.message)); }
+}
+
+// ==========================================
+// PERFECT 1-CLICK PDF DOWNLOAD (NO MARGINS)
+// ==========================================
+async function generateOptimizedPDF() {
+    const preview = document.getElementById('preview');
+    if (!preview.innerHTML || preview.innerHTML.trim() === '') { alert("कृपया पहले 'Preview Book' पर क्लिक करें!"); return; }
+    
+    const pdfBtn = document.getElementById('pdfBtn'); 
+    pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF बन रही है, कृपया रुकें...'; 
+    pdfBtn.disabled = true;
+    
+    await new Promise(r => setTimeout(r, 100));
+    
+    const pages = document.querySelectorAll('#containerA .page');
+    if (pages.length === 0) { 
+        alert("कोई पेज नहीं मिला!"); 
+        pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF (1-Click)'; 
+        pdfBtn.disabled = false; 
+        return; 
+    }
+    
+    // Get actual Paper Size selected by user
+    const pSize = document.getElementById('paperSize').value.toLowerCase(); // 'a4' or 'a5'
+    const pdf = new jsPDF({ unit: 'pt', format: pSize, compress: true });
+    
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    for (let i = 0; i < pages.length; i++) {
+        if (i > 0) pdf.addPage();
+        
+        // Remove margins & shadows temporarily so the capture is exactly edge-to-edge
+        const originalMargin = pages[i].style.margin;
+        const originalShadow = pages[i].style.boxShadow;
+        pages[i].style.margin = '0';
+        pages[i].style.boxShadow = 'none';
+        
+        const canvas = await html2canvas(pages[i], { 
+            scale: 2, 
+            useCORS: true, 
+            allowTaint: true, 
+            logging: false, 
+            backgroundColor: '#ffffff' 
+        });
+        
+        // Restore styles back for the web preview
+        pages[i].style.margin = originalMargin;
+        pages[i].style.boxShadow = originalShadow;
+        
+        const imgData = canvas.toDataURL('image/jpeg', 0.85);
+        
+        // Draw image starting exactly at 0,0 and filling exactly the PDF width/height
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+    }
+    
+    pdf.save('Mockrise_Book_' + pSize.toUpperCase() + '.pdf');
+    pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF (1-Click)'; 
+    pdfBtn.disabled = false;
 }
 </script>
 </body>
