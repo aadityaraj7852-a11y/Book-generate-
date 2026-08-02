@@ -35,7 +35,6 @@
     #containerA { padding: 20px; color: #111827; }
     #containerA .container { max-width: 1450px; margin: 0 auto; }
 
-    /* LAYOUT: Editor on Left, Settings/Buttons on Right */
     #containerA .dashboard-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; margin-bottom: 20px; }
     #containerA .panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
     
@@ -49,8 +48,8 @@
     #containerA .btn-success { background: #10b981; color: white; }
     #containerA .btn-danger { background: #ef4444; color: white; }
     #containerA .btn-dark { background: #374151; color: white; }
+    #containerA .btn-magic { background: #8b5cf6; color: white; padding: 4px 10px; font-size: 13px; margin-left: auto; box-shadow: 0 2px 5px rgba(139,92,246,0.4); }
     
-    /* DROPDOWN MENU STYLE FOR CHAPTER LIST */
     details.chapter-dropdown { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; }
     details.chapter-dropdown summary { padding: 12px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; outline: none; }
     details.chapter-dropdown summary::-webkit-details-marker { display: none; }
@@ -64,7 +63,6 @@
 
     #containerA .preview-area { background: white; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); padding: 20px; overflow-x: auto; scroll-behavior: smooth; }
     
-    /* PDF PAGE LAYOUT */
     #containerA .page { width: 794px; height: 1123px; background: white; margin: 20px auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; line-height: 1.4; font-family: var(--pdf-font) !important; font-size: 15px; }
 
     #containerA .watermark { position: absolute; top: 50%; left: 50%; width: 350px; transform: translate(-50%, -50%) rotate(var(--wm-rot)) scale(var(--wm-scale)); opacity: var(--wm-op); z-index: 9999; pointer-events: none; }
@@ -85,14 +83,11 @@
     #containerA .middleLine { position: absolute; top: 160px; bottom: 100px; left: 50%; width: 2px; background: #000; z-index: 2; }
     #containerA .bottomLine { position: absolute; bottom: 80px; left: 60px; right: 60px; border-top: 2px solid #000; z-index: 2;}
 
-    /* NOTES STYLING - FULL BLACK QUOTE BOX */
     #containerA .notes h1, #containerA .notes h2, #containerA .notes h3 { font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; padding: 10px 16px; background: #000000; border-radius: 6px; display: inline-block; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
     #containerA .notes p { margin-top: 0; margin-bottom: 12px; }
     #containerA .notes ul, #containerA .notes ol { margin-top: 0; margin-bottom: 12px; padding-left: 20px; }
-    
     #containerA .notes img { max-width: 100%; height: auto; display: block; margin: 8px 0; border-radius: 6px; }
     
-    /* Perfect Black Quote Box */
     #containerA .notes blockquote { border-left: 5px solid #000000; background: #f9fafb; padding: 12px 16px; margin: 12px 0; font-style: italic; border-radius: 0 8px 8px 0; color: #000000; font-weight: 600; }
     
     #containerA .notes table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; background: #fff; }
@@ -129,7 +124,6 @@
 
       <div class="dashboard-grid">
         
-        <!-- LEFT PANEL (Content Creation Focused) -->
         <div class="panel">
           <div class="form-group" style="background: #f8fafc; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 8px; margin-bottom: 20px;">
             <label><i class="fas fa-heading"></i> हेडर ब्रांडिंग (Header Branding)</label>
@@ -144,8 +138,13 @@
           </div>
           
           <div class="form-group">
-            <label>चैप्टर के नोट्स (Word-like Editor)</label>
-            <!-- TinyMCE Textarea -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="margin: 0;">चैप्टर के नोट्स (Word-like Editor)</label>
+                <!-- MAGIC DEVLYS CONVERTER BUTTON -->
+                <button type="button" class="btn btn-magic" onclick="convertEditorDevlys()" title="Devlys को Unicode में बदलें">
+                    <i class="fas fa-magic"></i> MS Word (Devlys) को हिंदी में बदलें
+                </button>
+            </div>
             <textarea id="chapNotes" placeholder="यहाँ नोट्स बनाएँ..."></textarea>
           </div>
           
@@ -164,10 +163,8 @@
           </div>
         </div>
 
-        <!-- RIGHT PANEL (Settings & Export/PDF Buttons) -->
         <div class="panel">
           
-          <!-- DROPDOWN CHAPTER LIST -->
           <details class="chapter-dropdown" open>
             <summary>
                 <span><i class="fas fa-list"></i> चैप्टर लिस्ट (<span id="chapCount">0</span>)</span>
@@ -178,7 +175,6 @@
             </div>
           </details>
           
-          <!-- Book Settings -->
           <div class="form-group" style="background: #eff6ff; padding: 12px; border: 1px solid #93c5fd; border-radius: 8px;">
             <label style="color:#1e3a8a; font-size:16px;"><i class="fas fa-cog"></i> बुक सेटिंग्स</label>
             
@@ -204,7 +200,6 @@
             </div>
           </div>
 
-          <!-- Custom Watermark -->
           <div class="form-group" style="background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
             <label><i class="fas fa-image"></i> कस्टम वॉटरमार्क</label>
             <input type="file" id="logoUpload" class="form-control" accept="image/*" onchange="handleLogoUpload()" style="padding:4px; font-size:12px; margin-bottom:8px;">
@@ -226,7 +221,6 @@
             </div>
           </div>
           
-          <!-- Action Buttons -->
           <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
             <div style="display: flex; gap: 10px;">
                 <button class="btn btn-dark" onclick="exportProject()" style="flex: 1; font-size: 12px;"><i class="fas fa-file-export"></i> Export JSON</button>
@@ -236,7 +230,6 @@
             
             <button class="btn btn-primary" onclick="previewBook()" style="font-size:15px; padding:12px;"><i class="fas fa-eye"></i> Preview Book</button>
             
-            <!-- ONLY TEXT PDF BUTTON KEPT -->
             <button class="btn btn-success" onclick="window.print()" style="font-size: 15px; padding:12px;">
                 <i class="fas fa-file-pdf"></i> Download PDF (Selectable Text)
             </button>
@@ -252,25 +245,84 @@
 
 <script>
 // ==========================================
+// DEVLYS TO UNICODE MAGIC CONVERTER LOGIC
+// ==========================================
+function convertEditorDevlys() {
+    let editorContent = tinymce.get('chapNotes').getContent();
+    if(!editorContent || editorContent.trim() === "") {
+        alert("एडिटर खाली है! पहले MS Word से Devlys (KrutiDev) वाला टेक्स्ट पेस्ट करें।");
+        return;
+    }
+    
+    // Create DOM tree to safely convert ONLY text nodes (preserving Tables, Images, Bold, etc.)
+    let temp = document.createElement('div');
+    temp.innerHTML = editorContent;
+    
+    let walk = document.createTreeWalker(temp, NodeFilter.SHOW_TEXT, null, false);
+    let node;
+    while(node = walk.nextNode()) {
+        if(node.nodeValue.trim() !== "") {
+            node.nodeValue = krutiToUnicode(node.nodeValue);
+        }
+    }
+    
+    tinymce.get('chapNotes').setContent(temp.innerHTML);
+    alert("जादू! आपका Devlys टेक्स्ट सफलतापूर्वक शुद्ध हिंदी (Unicode) में बदल दिया गया है।");
+}
+
+function krutiToUnicode(text) {
+    if(!text) return text;
+    // Standard Kruti Dev 010 to Unicode Map Arrays
+    var array_one = ["ñ","Q+Z","sas","aa",")Z","ZZ","‘","’","“","”","å","ƒ","„","…","†","‡","ˆ","‰","Š","‹","¶+","d+","[+k","[+","x+","T+","t+","M+","<+","Q+",";+","j+","u+","Ùk","Ù","ä","–","—","é","™","=kk","f=k","EY","£","x","X","c","C","v","V","y","Y","p","P","d","D","q","Q","a","A","s","S","W","w","i","I","u","U","o","O","t","T","m","M","l","L","g","G","k","K","h","H","j","J","f","F","z","Z","¢","´","~","`","!","@","#","$","%","^","&","*","(",")","-","_","+","=","|","\\","{","}","[","]",":",";","\"","'","<",">",",",".","?","/"];
+    var array_two = ["र्त्त","QZ+","sa","a","र्द्ध","Z","\"","\"","'","'","०","१","२","३","४","५","६","७","८","९","फ़्","क़","ख़","ख़्","ग़","ज़","ज़्","ड़","ढ़","फ़","य़","ऱ","ऩ","त्त","त्त्","क्त","दृ","कृ","न्न","न्न्","=k","f=","ल्ल","रु","ग","ग्","ब","ब्","अ","ट","ल","ल्","च","च्","क","क्","उ","ऊ","ं","ँ","े","ै","ै","ू","ि","ी","न","न्","व","व्","ज","ज्","म","म्","स","स्","ह","ह्","ा","क्ष","हृ","ृ","र","र्","ि","्","्र","्","ऽ","ॐ","्","्","!","@","#","$","%","^","&","*","(",")","-","_","+","=","|","\\","{","}","[","]",":",";","\"","'","<",">",",",".","?","/"];
+    
+    let modified_substring = text;
+    for (let i = 0; i < array_one.length; i++) {
+        modified_substring = modified_substring.split(array_one[i]).join(array_two[i]);
+    }
+    
+    // Shift 'f' (Chhoti Ee ki Matra) to correct side
+    var position_of_i = modified_substring.indexOf("f");
+    while (position_of_i !== -1) {
+        var character_next_to_i = modified_substring.charAt(position_of_i + 1);
+        var character_to_be_replaced = "f" + character_next_to_i;
+        modified_substring = modified_substring.replace(character_to_be_replaced, character_next_to_i + "ि");
+        position_of_i = modified_substring.indexOf("f", position_of_i + 1);
+    }
+    
+    // Shift 'Z' (Half R / Ref)
+    var position_of_R = modified_substring.indexOf("Z");
+    while (position_of_R > 0) {
+        var character_previous_to_R = modified_substring.charAt(position_of_R - 1);
+        var char_to_replace = character_previous_to_R + "Z";
+        modified_substring = modified_substring.replace(char_to_replace, "र्" + character_previous_to_R);
+        position_of_R = modified_substring.indexOf("Z", position_of_R - 1);
+    }
+
+    // Fix double matras overlapping
+    modified_substring = modified_substring.replace(/ाे/g, "ो");
+    modified_substring = modified_substring.replace(/ाै/g, "ौ");
+    
+    return modified_substring;
+}
+
+// ==========================================
 // TINYMCE ADVANCED EDITOR INITIALIZATION
 // ==========================================
 tinymce.init({
   selector: '#chapNotes',
-  plugins: 'image table lists link preview',
+  plugins: 'image table lists link preview code',
   toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | table image | blockquote',
   height: 350,
   menubar: false,
   branding: false,
   content_style: 'body { font-family:Mukta,sans-serif; font-size:16px; } blockquote { border-left: 5px solid #000; padding: 10px; background: #f9fafb; color: #000; } img {max-width:100%; height:auto;}',
-  
-  // Advanced Base64 Image Uploader allows drag-resize locally
   images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
     resolve("data:" + blobInfo.blob().type + ";base64," + blobInfo.base64());
   }),
-  
   setup: function (editor) {
     editor.on('init', function (e) {
-      loadFromLocal(); // Load data only when editor is fully ready
+      loadFromLocal();
     });
   }
 });
@@ -279,7 +331,6 @@ let bookData = { chapters: [] };
 let editingIndex = -1; 
 let customLogoBase64 = "";
 
-// Drag and Drop functionality
 document.addEventListener('DOMContentLoaded', function() {
     var el = document.getElementById('chapterList');
     new Sortable(el, {
@@ -316,7 +367,6 @@ function importProject(event) {
 }
 
 function updateSettings() {
-    // Watermark updates
     const rot = document.getElementById('wmRotation').value;
     const zoom = document.getElementById('wmZoom').value;
     const op = document.getElementById('wmOpacity').value;
@@ -327,7 +377,6 @@ function updateSettings() {
     document.documentElement.style.setProperty('--wm-scale', zoom);
     document.documentElement.style.setProperty('--wm-op', op);
     
-    // Font updates
     const fontVal = document.getElementById('pdfFont').value;
     document.documentElement.style.setProperty('--pdf-font', fontVal);
     
@@ -394,10 +443,7 @@ function updateChapterUI() {
 function loadChapterToEdit(idx) {
   editingIndex = idx; const ch = bookData.chapters[idx];
   document.getElementById('chapTitle').value = ch.title;
-  
-  // Set TinyMCE Content
   tinymce.get('chapNotes').setContent(ch.notes || '');
-  
   if (ch.questions && ch.questions.length > 0) { document.getElementById('chapQuestions').value = JSON.stringify(ch.questions, null, 2); } 
   else { document.getElementById('chapQuestions').value = ''; }
   
@@ -433,11 +479,8 @@ function clearAll() {
 
 function addChapter() {
   const cTitle = document.getElementById('chapTitle').value.trim();
-  
-  // Get TinyMCE Content
   let cNotes = tinymce.get('chapNotes').getContent();
   if(cNotes === '<p><br data-mce-bogus="1"></p>') cNotes = ''; 
-  
   let cQuestionsRaw = document.getElementById('chapQuestions').value.trim();
 
   if(!cTitle) { alert("कृपया चैप्टर का नाम दर्ज करें!"); return; }
@@ -459,7 +502,7 @@ function addChapter() {
 }
 
 // ==========================================
-// ORIGINAL SMART SPLIT ENGINE
+// SMART SPLIT ENGINE
 // ==========================================
 function appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, isContinuation = false, depth = 0) {
     if (depth > 20) {
@@ -475,11 +518,9 @@ function appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, isC
     div.innerHTML = htmlStr;
     currentTarget.appendChild(div);
 
-    if (currentTarget.scrollHeight <= currentTarget.clientHeight + 2) {
-        return currentTarget; // Fits perfectly
-    }
+    if (currentTarget.scrollHeight <= currentTarget.clientHeight + 2) { return currentTarget; }
 
-    currentTarget.removeChild(div); // Doesn't fit
+    currentTarget.removeChild(div);
 
     if (currentTarget.innerHTML.trim() === "") {
         currentTarget.appendChild(div);
@@ -487,13 +528,11 @@ function appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, isC
     }
 
     const trimmedHTML = htmlStr.trim().toLowerCase();
-    // Elements not to split
     if (trimmedHTML.startsWith("<table") || trimmedHTML.startsWith("<div") || trimmedHTML.startsWith("<ul") || trimmedHTML.startsWith("<ol") || trimmedHTML.startsWith("<h") || trimmedHTML.startsWith("<blockquote") || trimmedHTML.startsWith("<img") || trimmedHTML.startsWith("<figure")) {
         currentTarget = nextColFunc();
         return appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, false, depth + 1);
     }
 
-    // Split paragraphs
     let words = htmlStr.split(" "); 
     let part = ""; 
     let fittedIndex = -1;
@@ -505,12 +544,8 @@ function appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, isC
     for (let i = 0; i < words.length; i++) {
         let testText = part + (i === 0 ? "" : " ") + words[i];
         tempDiv.innerHTML = testText;
-        if (currentTarget.scrollHeight > currentTarget.clientHeight) {
-            break; 
-        } else { 
-            part = testText; 
-            fittedIndex = i; 
-        }
+        if (currentTarget.scrollHeight > currentTarget.clientHeight) { break; } 
+        else { part = testText; fittedIndex = i; }
     }
     tempDiv.remove();
 
@@ -576,7 +611,6 @@ function previewBook() {
             }
         };
 
-        // Split Editor Notes perfectly
         if (ch.notes) {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = ch.notes;
