@@ -29,15 +29,17 @@
     body { margin: 0; padding: 0; background: #f3f4f6; }
     
     #containerA { font-family: 'Mukta', 'Poppins', sans-serif; padding: 20px; color: #111827; }
-    #containerA .container { max-width: 1400px; margin: 0 auto; }
+    #containerA .container { max-width: 1450px; margin: 0 auto; }
 
-    #containerA .dashboard-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; margin-bottom: 20px; }
+    /* LAYOUT RE-ARRANGED: Editor on Left, Settings/Buttons on Right */
+    #containerA .dashboard-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; margin-bottom: 20px; }
     #containerA .panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    
     #containerA .form-group { margin-bottom: 15px; }
-    #containerA .form-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #374151; }
+    #containerA .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #374151; }
     #containerA .form-control { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; box-sizing: border-box; }
     
-    #containerA .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; font-family: 'Poppins', sans-serif;}
+    #containerA .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-family: 'Poppins', sans-serif;}
     #containerA .btn:hover { opacity: 0.9; }
     #containerA .btn-primary { background: #2563eb; color: white; }
     #containerA .btn-success { background: #10b981; color: white; }
@@ -52,7 +54,7 @@
 
     #containerA .preview-area { background: white; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); padding: 20px; overflow-x: auto; scroll-behavior: smooth; }
     
-    /* ORIGINAL PAGE UI (Safe and Secure) */
+    /* PDF PAGE LAYOUT */
     #containerA .page { width: 794px; height: 1123px; background: white; margin: 20px auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; font-size: 15px; line-height: 1.4; }
 
     :root { --wm-rot: -45deg; --wm-scale: 1.5; --wm-op: 0.12; }
@@ -69,22 +71,26 @@
     #containerA .running-right { float: right; font-family: 'Poppins', sans-serif;}
     #containerA .header-line { position:absolute; top: 130px; left: 60px; right: 60px; height: 2px; background: #000; z-index: 2;}
     
-    /* FIXED COLUMNS FOR RELIABLE SPLITTING */
+    /* TWO COLUMNS (ORIGINAL UI) */
     #containerA .content-area { position: absolute; top: 160px; bottom: 100px; left: 60px; right: 60px; display: flex; gap: 40px; }
     #containerA .col { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
     #containerA .middleLine { position: absolute; top: 160px; bottom: 100px; left: 50%; width: 2px; background: #000; z-index: 2; }
     #containerA .bottomLine { position: absolute; bottom: 80px; left: 60px; right: 60px; border-top: 2px solid #000; z-index: 2;}
 
-    /* Styling applied to blocks passed into columns */
-    #containerA .notes h1, #containerA .notes h2, #containerA .notes h3 { font-size: 22px; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; padding: 10px 16px; background: #000000; border-radius: 6px; display: inline-block; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+    /* NOTES STYLING - BEAUTIFUL QUOTE BOX ADDED */
+    #containerA .notes h1, #containerA .notes h2, #containerA .notes h3 { font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; padding: 10px 16px; background: #000000; border-radius: 6px; display: inline-block; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
     #containerA .notes p { margin-top: 0; margin-bottom: 12px; }
     #containerA .notes ul, #containerA .notes ol { margin-top: 0; margin-bottom: 12px; padding-left: 20px; }
+    
+    /* Beautiful Quote Box (Blockquote) */
+    #containerA .notes blockquote { border-left: 5px solid #2563eb; background: #eff6ff; padding: 12px 16px; margin: 12px 0; font-style: italic; border-radius: 0 8px 8px 0; color: #1e3a8a; font-weight: 600; }
+    
     #containerA .notes table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; background: #fff; }
     #containerA .notes th, #containerA .notes td { border: 1px solid #9ca3af; padding: 8px 10px; text-align: left; }
     #containerA .notes th { background: #e5e7eb; font-weight: 700; color: #1f2937; }
     #containerA .notes tr:nth-child(even) { background-color: #f9fafb; }
     
-    #containerA .qbox { margin-bottom: 4px; font-weight: 600; }
+    #containerA .qbox { margin-bottom: 6px; font-weight: 600; }
     #containerA .opt { margin-left: 16px; margin-bottom: 4px; }
     #containerA .exp { margin: 8px 0 12px; padding: 10px 14px; border: 1px solid #9ca3af; border-radius: 8px; background: #f9fafb; font-size: 14px; line-height: 1.5; text-align: justify; }
 
@@ -96,7 +102,7 @@
     #containerA .index-page th { background: #d0d0d0; font-weight: bold; }
     #containerA .index-page td:nth-child(2) { text-align: left; padding-left: 18px; }
     
-    .ql-container { font-family: 'Mukta', 'Poppins', sans-serif !important; font-size: 15px !important; }
+    .ql-container { font-family: 'Mukta', 'Poppins', sans-serif !important; font-size: 16px !important; }
 
     @media print {
         body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -115,44 +121,16 @@
       <h1 style="text-align:center; margin-top:0; margin-bottom:20px; font-family: 'Poppins', sans-serif;">Book Generator - Mockrise</h1>
 
       <div class="dashboard-grid">
+        
+        <!-- LEFT PANEL (Content Creation Focused) -->
         <div class="panel">
-          
-          <div class="form-group" style="background: #eff6ff; padding: 12px; border: 1px solid #93c5fd; border-radius: 8px; margin-bottom: 20px;">
-            <label style="color:#1e3a8a;"><i class="fas fa-cog"></i> बुक सेटिंग्स</label>
-            <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px;">
-                <div>
-                    <label style="font-size: 12px; color:#475569;">Answer Key Position</label>
-                    <select id="ansStyle" class="form-control" onchange="saveToLocal(); previewBook();" style="padding:6px;">
-                        <option value="inline">प्रश्न के ठीक नीचे (Inline)</option>
-                        <option value="end">चैप्टर के अंत में (Answer Key)</option>
-                    </select>
-                </div>
-            </div>
-          </div>
-
           <div class="form-group" style="background: #f8fafc; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 8px; margin-bottom: 20px;">
-            <label><i class="fas fa-heading"></i> हेडर ब्रांडिंग</label>
+            <label><i class="fas fa-heading"></i> हेडर ब्रांडिंग (Header Branding)</label>
             <input type="text" id="brandText" class="form-control" value="Mockrise" placeholder="उदा: Mockrise या अपना नाम" oninput="updateBrandText()">
-            <hr style="margin: 15px 0; border: 0; border-top: 1px dashed #cbd5e1;">
-            <label><i class="fas fa-image"></i> कस्टम वॉटरमार्क</label>
-            <input type="file" id="logoUpload" class="form-control" accept="image/*" onchange="handleLogoUpload()">
-            <div style="margin-top: 15px; display: grid; gap: 12px;">
-              <div>
-                <label style="font-size: 13px; color:#475569;">Rotation (एंगल): <b id="rotVal">-45°</b></label>
-                <input type="range" id="wmRotation" min="-180" max="180" value="-45" style="width:100%" oninput="updateWatermark()">
-              </div>
-              <div>
-                <label style="font-size: 13px; color:#475569;">Zoom: <b id="zoomVal">1.5x</b></label>
-                <input type="range" id="wmZoom" min="0.5" max="4.0" step="0.1" value="1.5" style="width:100%" oninput="updateWatermark()">
-              </div>
-              <div>
-                <label style="font-size: 13px; color:#475569;">Opacity: <b id="opVal">0.12</b></label>
-                <input type="range" id="wmOpacity" min="0.01" max="1.0" step="0.01" value="0.12" style="width:100%" oninput="updateWatermark()">
-              </div>
-            </div>
           </div>
 
-          <h3 id="formTitle"><i class="fas fa-plus-circle"></i> नया चैप्टर जोड़ें</h3>
+          <h3 id="formTitle" style="color: #111827; margin-bottom:15px;"><i class="fas fa-plus-circle"></i> नया चैप्टर जोड़ें</h3>
+          
           <div class="form-group">
             <label>चैप्टर का नाम (Title)</label>
             <input type="text" id="chapTitle" class="form-control" placeholder="उदा: राजस्थान का भूगोल">
@@ -160,7 +138,8 @@
           
           <div class="form-group">
             <label>चैप्टर के नोट्स (Rich Text Editor)</label>
-            <div id="editor-container" style="height: 200px; background: white; border-bottom-left-radius:6px; border-bottom-right-radius:6px;"></div>
+            <!-- Editor height increased for better view -->
+            <div id="editor-container" style="height: 280px; background: white; border-bottom-left-radius:6px; border-bottom-right-radius:6px;"></div>
           </div>
           
           <div class="form-group">
@@ -169,41 +148,77 @@
           </div>
           
           <div style="display: flex; gap: 10px;">
-            <button class="btn btn-primary" id="saveBtn" onclick="addChapter()" style="flex: 1; justify-content: center;">
+            <button class="btn btn-primary" id="saveBtn" onclick="addChapter()" style="flex: 1;">
                 <i class="fas fa-save"></i> चैप्टर सेव करें
             </button>
             <button class="btn btn-danger" id="cancelEditBtn" onclick="cancelEdit()" style="display: none;" title="Cancel Edit">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times"></i> रद्द करें
             </button>
           </div>
         </div>
 
+        <!-- RIGHT PANEL (Settings & Export/PDF Buttons) -->
         <div class="panel">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
               <h3 style="margin:0;"><i class="fas fa-list"></i> चैप्टर लिस्ट (<span id="chapCount">0</span>)</h3>
           </div>
           <p style="font-size: 12px; color: #6b7280; margin-top: 0;">(क्रम बदलने के लिए ड्रैग एंड ड्रॉप करें)</p>
           
-          <div id="chapterList" style="min-height: 150px; margin-bottom: 15px;"></div>
+          <div id="chapterList" style="min-height: 120px; max-height: 200px; overflow-y: auto; margin-bottom: 15px;"></div>
           
-          <div style="display: flex; flex-direction: column; gap: 10px;">
+          <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 15px 0;">
+
+          <!-- MOVED: Book Settings -->
+          <div class="form-group" style="background: #eff6ff; padding: 12px; border: 1px solid #93c5fd; border-radius: 8px;">
+            <label style="color:#1e3a8a;"><i class="fas fa-cog"></i> बुक सेटिंग्स</label>
+            <label style="font-size: 12px; color:#475569; font-weight: normal; margin-top:6px;">Answer Key Position:</label>
+            <select id="ansStyle" class="form-control" onchange="saveToLocal(); previewBook();" style="padding:6px; font-size:13px;">
+                <option value="inline">प्रश्न के ठीक नीचे (Inline)</option>
+                <option value="end">चैप्टर के अंत में (Answer Key)</option>
+            </select>
+          </div>
+
+          <!-- MOVED: Custom Watermark -->
+          <div class="form-group" style="background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <label><i class="fas fa-image"></i> कस्टम वॉटरमार्क</label>
+            <input type="file" id="logoUpload" class="form-control" accept="image/*" onchange="handleLogoUpload()" style="padding:4px; font-size:12px; margin-bottom:8px;">
+            <div style="display: grid; gap: 8px;">
+              <div>
+                <label style="font-size: 12px; color:#475569;">Rotation: <b id="rotVal">-45°</b></label>
+                <input type="range" id="wmRotation" min="-180" max="180" value="-45" style="width:100%" oninput="updateWatermark()">
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <div style="flex:1;">
+                    <label style="font-size: 12px; color:#475569;">Zoom: <b id="zoomVal">1.5x</b></label>
+                    <input type="range" id="wmZoom" min="0.5" max="4.0" step="0.1" value="1.5" style="width:100%" oninput="updateWatermark()">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size: 12px; color:#475569;">Opacity: <b id="opVal">0.12</b></label>
+                    <input type="range" id="wmOpacity" min="0.01" max="1.0" step="0.01" value="0.12" style="width:100%" oninput="updateWatermark()">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
             <div style="display: flex; gap: 10px;">
-                <button class="btn btn-dark" onclick="exportProject()" style="flex: 1; justify-content: center; font-size: 13px;"><i class="fas fa-file-export"></i> Export JSON</button>
-                <button class="btn btn-dark" onclick="document.getElementById('importFile').click()" style="flex: 1; justify-content: center; font-size: 13px;"><i class="fas fa-file-import"></i> Import JSON</button>
+                <button class="btn btn-dark" onclick="exportProject()" style="flex: 1; font-size: 12px;"><i class="fas fa-file-export"></i> Export JSON</button>
+                <button class="btn btn-dark" onclick="document.getElementById('importFile').click()" style="flex: 1; font-size: 12px;"><i class="fas fa-file-import"></i> Import JSON</button>
                 <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importProject(event)">
             </div>
             
-            <button class="btn btn-primary" onclick="previewBook()" style="justify-content: center; font-size:16px; padding:12px;"><i class="fas fa-eye"></i> Preview Book</button>
+            <button class="btn btn-primary" onclick="previewBook()" style="font-size:15px; padding:12px;"><i class="fas fa-eye"></i> Preview Book</button>
             
-            <button class="btn btn-success" onclick="generateOptimizedPDF()" id="pdfBtn" style="justify-content: center; background: #059669; font-size: 14px;">
-                <i class="fas fa-file-image"></i> Download Image PDF (Original)
+            <button class="btn btn-success" onclick="generateOptimizedPDF()" id="pdfBtn" style="background: #059669; font-size: 13px;">
+                <i class="fas fa-file-image"></i> Download Image PDF
             </button>
 
-            <button class="btn btn-dark" onclick="window.print()" style="justify-content: center; background: #4f46e5; font-size: 14px;">
-                <i class="fas fa-file-pdf"></i> Download Text Print PDF
+            <button class="btn btn-dark" onclick="window.print()" style="background: #4f46e5; font-size: 13px;">
+                <i class="fas fa-file-pdf"></i> Download Text PDF
             </button>
             
-            <button class="btn btn-danger" onclick="clearAll()" style="justify-content: center;"><i class="fas fa-trash"></i> सब डिलीट करें</button>
+            <button class="btn btn-danger" onclick="clearAll()"><i class="fas fa-trash"></i> सब डिलीट करें</button>
           </div>
         </div>
       </div>
@@ -214,14 +229,17 @@
 
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script>
+// Cleaned up toolbar with exactly what is needed (Quote box added, bulb/extra icons removed)
 var quill = new Quill('#editor-container', {
   theme: 'snow',
   modules: {
       toolbar: [
           [{ 'header': [1, 2, 3, false] }],
           ['bold', 'italic', 'underline'],
+          ['blockquote'], // This is the Quote Box icon
           [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-          ['clean']
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'align': [] }]
       ]
   },
   placeholder: 'यहाँ अपने नोट्स टाइप करें या कॉपी-पेस्ट करें...'
@@ -394,6 +412,77 @@ function addChapter() {
   saveToLocal(); updateChapterUI(); previewBook(); 
 }
 
+// ==========================================
+// ORIGINAL SMART SPLIT ENGINE (BUG FIXED)
+// ==========================================
+function appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, isContinuation = false, depth = 0) {
+    if (depth > 20) {
+        const forced = document.createElement('div');
+        forced.className = baseClassName;
+        forced.innerHTML = htmlStr;
+        currentTarget.appendChild(forced);
+        return currentTarget;
+    }
+
+    const div = document.createElement('div');
+    div.className = baseClassName + (isContinuation ? " split-bottom" : "");
+    div.innerHTML = htmlStr;
+    currentTarget.appendChild(div);
+
+    if (currentTarget.scrollHeight <= currentTarget.clientHeight + 2) {
+        return currentTarget; // Fits perfectly
+    }
+
+    currentTarget.removeChild(div); // Doesn't fit
+
+    if (currentTarget.innerHTML.trim() === "") {
+        currentTarget.appendChild(div);
+        return nextColFunc(); 
+    }
+
+    const trimmedHTML = htmlStr.trim().toLowerCase();
+    // Do not split Tables, Divs, Lists, Headings, or Blockquotes word by word. Push them to the next column.
+    if (trimmedHTML.startsWith("<table") || trimmedHTML.startsWith("<div") || trimmedHTML.startsWith("<ul") || trimmedHTML.startsWith("<ol") || trimmedHTML.startsWith("<h") || trimmedHTML.startsWith("<blockquote")) {
+        currentTarget = nextColFunc();
+        return appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, false, depth + 1);
+    }
+
+    // Split large text paragraphs word by word
+    let words = htmlStr.split(" "); 
+    let part = ""; 
+    let fittedIndex = -1;
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.className = baseClassName + (isContinuation ? " split-bottom" : "");
+    currentTarget.appendChild(tempDiv);
+
+    for (let i = 0; i < words.length; i++) {
+        let testText = part + (i === 0 ? "" : " ") + words[i];
+        tempDiv.innerHTML = testText;
+        if (currentTarget.scrollHeight > currentTarget.clientHeight) {
+            break; 
+        } else { 
+            part = testText; 
+            fittedIndex = i; 
+        }
+    }
+    tempDiv.remove();
+
+    if (part.trim() === "" || fittedIndex === -1) {
+        currentTarget = nextColFunc();
+        return appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, false, depth + 1);
+    }
+
+    const topPart = document.createElement('div');
+    topPart.className = baseClassName + (isContinuation ? " split-bottom split-top" : " split-top");
+    topPart.innerHTML = part; 
+    currentTarget.appendChild(topPart);
+    
+    let remainingHTML = words.slice(fittedIndex + 1).join(" ");
+    currentTarget = nextColFunc();
+    return appendWithSplit(remainingHTML, baseClassName, currentTarget, nextColFunc, true, depth + 1);
+}
+
 function createPage(pageNo, title, chapterNum, isFirst, chapName, chIndex) {
     const p = document.createElement('div'); p.className = 'page';
     if (isFirst && chIndex !== undefined) p.id = `chapter-page-${chIndex}`;
@@ -414,31 +503,6 @@ function createIndexPage(chapters) {
     return div;
 }
 
-/* NEW ROBUST NODE PAGINATION ENGINE (Fixes the Rich Text HTML Bug) */
-function appendSmart(htmlStr, baseClassName, currentCol, getNextCol) {
-    const temp = document.createElement('div');
-    temp.innerHTML = htmlStr;
-    const children = Array.from(temp.childNodes);
-
-    for (let child of children) {
-        if (child.nodeType === 3 && child.textContent.trim() === '') continue; // Skip blank spaces
-        
-        const wrapper = document.createElement('div');
-        wrapper.className = baseClassName;
-        wrapper.appendChild(child.cloneNode(true));
-        
-        currentCol.appendChild(wrapper);
-
-        // Check if adding this block overflows the column
-        if (currentCol.scrollHeight > currentCol.clientHeight + 5) {
-            currentCol.removeChild(wrapper);
-            currentCol = getNextCol();
-            currentCol.appendChild(wrapper);
-        }
-    }
-    return currentCol;
-}
-
 function previewBook() {
     const preview = document.getElementById('preview'); preview.innerHTML = '';
     if (!bookData || !bookData.chapters || !bookData.chapters.length) return; 
@@ -457,36 +521,37 @@ function previewBook() {
         let chapterAnswers = [];
         
         const getNextCol = () => {
-            if (currentTarget === currentLeft) {
-                currentTarget = currentRight;
-            } else {
-                globalPage++; 
-                let newPage = createPage(globalPage, ch.title, idx + 1, false, ch.title);
+            if (currentTarget === currentLeft) return currentRight;
+            else {
+                globalPage++; let newPage = createPage(globalPage, ch.title, idx + 1, false, ch.title);
                 preview.appendChild(newPage);
-                currentLeft = newPage.querySelector('.col-left'); 
-                currentRight = newPage.querySelector('.col-right');
-                currentTarget = currentLeft;
+                currentLeft = newPage.querySelector('.col-left'); currentRight = newPage.querySelector('.col-right');
+                return currentLeft;
             }
-            return currentTarget;
         };
 
-        // Appending Notes properly line-by-line / block-by-block
+        // NEW: Break Quill Notes into smaller DOM blocks before splitting! This fixes the bug.
         if (ch.notes) {
-            currentTarget = appendSmart(ch.notes, "notes", currentTarget, getNextCol);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = ch.notes;
+            Array.from(tempDiv.childNodes).forEach(child => {
+                if (child.nodeType === 3 && child.textContent.trim() === '') return;
+                let childHTML = child.nodeType === 1 ? child.outerHTML : child.textContent;
+                currentTarget = appendWithSplit(childHTML, "notes", currentTarget, getNextCol);
+            });
         }
         
-        // Appending Questions
         ch.questions.forEach((q, qIdx) => {
             const qText = q.question ? q.question.replace(/\n/g, '<br>') : '';
             let qHtml = `<b>${qIdx + 1}. ${qText}</b>`;
-            currentTarget = appendSmart(qHtml, "qbox", currentTarget, getNextCol);
+            currentTarget = appendWithSplit(qHtml, "qbox", currentTarget, getNextCol);
             
             const optsArray = q.options || q.option || [];
             if (optsArray.length > 0) {
                 optsArray.forEach((o, i) => {
                     const optText = o.replace(/\n/g, '<br>');
                     let optHtml = `(${['A','B','C','D'][i] || i+1}) ${optText}`;
-                    currentTarget = appendSmart(optHtml, "opt", currentTarget, getNextCol);
+                    currentTarget = appendWithSplit(optHtml, "opt", currentTarget, getNextCol);
                 });
             }
             
@@ -501,23 +566,22 @@ function previewBook() {
                     let content = '';
                     if (ansText) content += `<div class="ans" style="margin-bottom:4px; margin-top:8px;"><b>उत्तर: (${ansText})</b></div>`;
                     if (expText) content += `<span><b>व्याख्या:</b> ${expText}</span>`;
-                    currentTarget = appendSmart(content, "exp", currentTarget, getNextCol);
+                    currentTarget = appendWithSplit(content, "exp", currentTarget, getNextCol);
                 } else {
                     chapterAnswers.push({ num: qIdx + 1, ans: ansText, exp: expText });
                 }
             }
         });
         
-        // Render Answer Key at the end
         if(ansStyle === 'end' && chapterAnswers.length > 0) {
             let akTitle = `<h1 style="text-align:center; margin-top:20px; font-size:18px;">उत्तर कुंजी एवं व्याख्या</h1>`;
-            currentTarget = appendSmart(akTitle, "notes", currentTarget, getNextCol);
+            currentTarget = appendWithSplit(akTitle, "notes", currentTarget, getNextCol);
             
             chapterAnswers.forEach(ans => {
                 let content = '';
                 if(ans.ans) content += `<div class="ans" style="margin-bottom:4px; color:#2563eb;"><b>प्र. ${ans.num} का उत्तर: (${ans.ans})</b></div>`;
                 if(ans.exp) content += `<span><b>व्याख्या:</b> ${ans.exp}</span>`;
-                currentTarget = appendSmart(content, "exp", currentTarget, getNextCol);
+                currentTarget = appendWithSplit(content, "exp", currentTarget, getNextCol);
             });
         }
         
