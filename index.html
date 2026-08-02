@@ -7,24 +7,29 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  
+  <!-- SortableJS for Drag and Drop -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  
+  <!-- Quill Rich Text Editor CSS -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
   <script>
     window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      },
-      startup: {
-        typeset: false 
-      }
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      startup: { typeset: false }
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
+    :root {
+        --page-width: 794px; /* A4 default */
+        --page-height: 1123px;
+        --col-count: 2;
+        --font-size: 15px;
+        --wm-rot: -45deg; --wm-scale: 1.5; --wm-op: 0.12;
+    }
     body { margin: 0; padding: 0; background: #f3f4f6; }
     
     #containerA { font-family: 'Mukta', 'Poppins', sans-serif; padding: 20px; color: #111827; }
@@ -42,22 +47,19 @@
     #containerA .btn-primary { background: #2563eb; color: white; }
     #containerA .btn-success { background: #10b981; color: white; }
     #containerA .btn-danger { background: #ef4444; color: white; }
+    #containerA .btn-dark { background: #374151; color: white; }
     
     #containerA .chapter-list-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; cursor: pointer; transition: 0.3s; }
     #containerA .chapter-list-item:hover { background: #eff6ff; border-color: #93c5fd; }
-    #containerA [contenteditable="true"]:focus { outline: 2px dashed #2563eb; background: #eff6ff; border-radius: 4px; padding: 2px; }
+    .sortable-ghost { opacity: 0.4; background: #e2e8f0 !important; }
+    .drag-handle { cursor: grab; color: #9ca3af; padding-right: 10px; }
 
     #containerA .preview-area { background: white; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); padding: 20px; overflow-x: auto; scroll-behavior: smooth; }
-    #containerA .page { width: 794px; height: 1123px; background: white; margin: 20px auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; font-size: 15px; line-height: 1.4; }
+    
+    /* DYNAMIC PAGE STYLES */
+    #containerA .page { width: var(--page-width); height: var(--page-height); background: white; margin: 20px auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; font-size: var(--font-size); line-height: 1.4; transition: all 0.3s; }
 
-    :root { --wm-rot: -45deg; --wm-scale: 1.5; --wm-op: 0.12; }
-    #containerA .watermark {
-      position: absolute; top: 50%; left: 50%; width: 350px;
-      transform: translate(-50%, -50%) rotate(var(--wm-rot)) scale(var(--wm-scale)); 
-      opacity: var(--wm-op); 
-      z-index: 9999; 
-      pointer-events: none;
-    }
+    #containerA .watermark { position: absolute; top: 50%; left: 50%; width: 350px; transform: translate(-50%, -50%) rotate(var(--wm-rot)) scale(var(--wm-scale)); opacity: var(--wm-op); z-index: 9999; pointer-events: none; }
 
     #containerA .page-header, #containerA .strip, #containerA .page-title, #containerA .running-header, #containerA .header-line, #containerA .content-area, #containerA .middleLine, #containerA .bottomLine, #containerA .page-footer { position: relative; z-index: 2; }
     #containerA .page-footer { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 6px 24px; border-radius: 20px; font-size: 15px; font-weight: 600; min-width: 60px; text-align: center; }
@@ -69,38 +71,38 @@
     #containerA .running-left { float: left; }
     #containerA .running-right { float: right; font-family: 'Poppins', sans-serif;}
     #containerA .header-line { position:absolute; top: 130px; left: 60px; right: 60px; height: 2px; background: #000; z-index: 2;}
-    #containerA .content-area { position: absolute; top: 160px; bottom: 100px; left: 60px; right: 60px; display: flex; gap: 40px; }
-    #containerA .col { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-
-    #containerA .notes h1 { font-size: 22px; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; padding: 10px 16px; background: #000000; border-radius: 6px; display: inline-block; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
-    #containerA .notes table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; background: #fff; }
-    #containerA .notes th, #containerA .notes td { border: 1px solid #9ca3af; padding: 8px 10px; text-align: left; }
-    #containerA .notes th { background: #e5e7eb; font-weight: 700; color: #1f2937; }
-    #containerA .notes tr:nth-child(even) { background-color: #f9fafb; }
-    #containerA .notes .pIndent { text-indent: 25px; margin: 8px 0; line-height: 1.5; }
     
-    #containerA .notes .alert.outline { border: 2px solid #000000; background: #ffffff; color: #000000; padding: 12px; border-radius: 8px; margin: 12px 0; font-weight: 600; border-left: 6px solid #000000; }
-
-    #containerA .qbox { margin-bottom: 10px; font-weight: 600; }
-    #containerA .qbox.split-top { margin-bottom: 0; }
-    #containerA .qbox.split-bottom { margin-top: 0; }
+    #containerA .content-area { position: absolute; top: 160px; bottom: 100px; left: 60px; right: 60px; column-count: var(--col-count); column-gap: 40px; column-fill: auto; overflow: hidden; }
+    
+    #containerA .notes h1, #containerA .notes h2, #containerA .notes h3 { font-size: 1.3em; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; padding: 8px 14px; background: #000000; border-radius: 6px; display: inline-block; }
+    #containerA .notes table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.95em; background: #fff; }
+    #containerA .notes th, #containerA .notes td { border: 1px solid #9ca3af; padding: 6px 8px; text-align: left; }
+    #containerA .notes th { background: #e5e7eb; font-weight: 700; color: #1f2937; }
+    
+    #containerA .q-block { break-inside: avoid; page-break-inside: avoid; margin-bottom: 15px; }
+    #containerA .qbox { font-weight: 600; margin-bottom: 4px; }
     #containerA .opt { margin-left: 16px; margin-bottom: 4px; }
-    #containerA .opt.split-top { margin-bottom: 0; }
-    #containerA .opt.split-bottom { margin-top: 0; }
-    #containerA .exp { margin: 8px 0 12px; padding: 10px 14px; border: 1px solid #9ca3af; border-radius: 8px; background: #f9fafb; font-size: 14px; line-height: 1.5; text-align: justify; }
-    #containerA .exp.split-top { border-bottom: 1px dashed #ccc !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; margin-bottom: 0 !important; padding-bottom: 15px !important; }
-    #containerA .exp.split-bottom { border-top: none !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; margin-top: 0 !important; padding-top: 15px !important; }
-
-    #containerA .middleLine { position: absolute; top: 160px; bottom: 100px; left: 50%; width: 2px; background: #000; z-index: 2; }
-    #containerA .bottomLine { position: absolute; bottom: 80px; left: 60px; right: 60px; border-top: 2px solid #000; z-index: 2;}
+    #containerA .exp { margin: 8px 0 12px; padding: 10px 14px; border: 1px solid #9ca3af; border-radius: 8px; background: #f9fafb; font-size: 0.95em; line-height: 1.5; text-align: justify; }
 
     #containerA .index-page .page-header { height: 160px; background: #e6e6e6; }
     #containerA .index-page .page-title { top: 80px; transform: translateY(-50%); font-size: 32px; background: #333; color: white; padding: 12px 50px; border-radius: 8px; left: 50%; transform: translate(-50%, -50%); width: auto; }
-    #containerA .index-page .content-area { top: 170px; left: 60px; right: 60px; display: block; }
+    #containerA .index-page .content-area { column-count: 1; top: 170px; display: block; overflow: visible; }
     #containerA .index-page table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 16px; }
     #containerA .index-page th, #containerA .index-page td { border: 1px solid #888; padding: 10px; text-align: center; }
     #containerA .index-page th { background: #d0d0d0; font-weight: bold; }
-    #containerA .index-page td:nth-child(2) { text-align: left; padding-left: 18px; }
+    
+    /* Quill Editor Customization */
+    .ql-container { font-family: 'Mukta', sans-serif !important; font-size: 15px !important; }
+
+    /* Print settings injected dynamically via JS based on Paper Size */
+    @media print {
+        body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .dashboard-grid, h1 { display: none !important; }
+        #containerA { padding: 0 !important; }
+        .preview-area { padding: 0 !important; margin: 0 !important; box-shadow: none !important; background: transparent !important; overflow: visible !important; }
+        .page { margin: 0 !important; box-shadow: none !important; border: none !important; page-break-after: always; }
+        .watermark { opacity: var(--wm-op) !important; }
+    }
   </style>
 </head>
 <body>
@@ -112,25 +114,56 @@
       <div class="dashboard-grid">
         <div class="panel">
           
+          <!-- BOOK SETTINGS PANEL (NEW) -->
+          <div class="form-group" style="background: #eff6ff; padding: 12px; border: 1px solid #93c5fd; border-radius: 8px; margin-bottom: 20px;">
+            <label style="color:#1e3a8a;"><i class="fas fa-cog"></i> बुक सेटिंग्स (Paper & Layout)</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <div>
+                    <label style="font-size: 12px; color:#475569;">Paper Size</label>
+                    <select id="paperSize" class="form-control" onchange="updateSettings()" style="padding:6px;">
+                        <option value="A4">A4 (Standard Book)</option>
+                        <option value="A5">A5 (Pocket Book)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color:#475569;">Columns</label>
+                    <select id="colCount" class="form-control" onchange="updateSettings()" style="padding:6px;">
+                        <option value="2">2 Columns</option>
+                        <option value="1">1 Column</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color:#475569;">Answer Key Position</label>
+                    <select id="ansStyle" class="form-control" onchange="updateSettings()" style="padding:6px;">
+                        <option value="inline">प्रश्न के ठीक नीचे</option>
+                        <option value="end">चैप्टर के अंत में (Answer Key)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color:#475569;">Font Size</label>
+                    <select id="fontSize" class="form-control" onchange="updateSettings()" style="padding:6px;">
+                        <option value="14px">Small (14px)</option>
+                        <option value="15px" selected>Normal (15px)</option>
+                        <option value="16.5px">Large (16.5px)</option>
+                    </select>
+                </div>
+            </div>
+          </div>
+
+          <!-- BRANDING & WATERMARK -->
           <div class="form-group" style="background: #f8fafc; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 8px; margin-bottom: 20px;">
-            <label><i class="fas fa-heading"></i> हेडर ब्रांडिंग (Header Branding)</label>
+            <label><i class="fas fa-heading"></i> हेडर ब्रांडिंग</label>
             <input type="text" id="brandText" class="form-control" value="Mockrise" placeholder="उदा: Mockrise या अपना नाम" oninput="updateBrandText()">
-            
-            <hr style="margin: 15px 0; border: 0; border-top: 1px dashed #cbd5e1;">
-            
-            <label><i class="fas fa-image"></i> कस्टम वॉटरमार्क (Gallery)</label>
+            <hr style="margin: 10px 0; border: 0; border-top: 1px dashed #cbd5e1;">
+            <label><i class="fas fa-image"></i> कस्टम वॉटरमार्क</label>
             <input type="file" id="logoUpload" class="form-control" accept="image/*" onchange="handleLogoUpload()">
-            <div style="margin-top: 15px; display: grid; gap: 12px;">
+            <div style="margin-top: 10px; display: grid; gap: 8px;">
               <div>
-                <label style="font-size: 13px; color:#475569;">Rotation (एंगल): <b id="rotVal">-45°</b></label>
-                <input type="range" id="wmRotation" min="-180" max="180" value="-45" style="width:100%" oninput="updateWatermark()">
-              </div>
-              <div>
-                <label style="font-size: 13px; color:#475569;">Zoom (आकार): <b id="zoomVal">1.5x</b></label>
+                <label style="font-size: 12px; color:#475569;">Zoom: <b id="zoomVal">1.5x</b></label>
                 <input type="range" id="wmZoom" min="0.5" max="4.0" step="0.1" value="1.5" style="width:100%" oninput="updateWatermark()">
               </div>
               <div>
-                <label style="font-size: 13px; color:#475569;">Opacity (पारदर्शिता): <b id="opVal">0.12</b></label>
+                <label style="font-size: 12px; color:#475569;">Opacity: <b id="opVal">0.12</b></label>
                 <input type="range" id="wmOpacity" min="0.01" max="1.0" step="0.01" value="0.12" style="width:100%" oninput="updateWatermark()">
               </div>
             </div>
@@ -141,13 +174,16 @@
             <label>चैप्टर का नाम (Title)</label>
             <input type="text" id="chapTitle" class="form-control" placeholder="उदा: राजस्थान का भूगोल">
           </div>
+          
+          <!-- QUILL RICH TEXT EDITOR -->
           <div class="form-group">
-            <label>चैप्टर के नोट्स (HTML Table / Text)</label>
-            <textarea id="chapNotes" class="form-control" placeholder="यहाँ Table या Text HTML डालें..."></textarea>
+            <label>चैप्टर के नोट्स (Rich Text Editor)</label>
+            <div id="editor-container" style="height: 180px; background: white; border-bottom-left-radius:6px; border-bottom-right-radius:6px;"></div>
           </div>
+          
           <div class="form-group">
-            <label>MCQ Questions (Paste Universal JSON Here)</label>
-            <textarea id="chapQuestions" class="form-control" placeholder="यहाँ DOCX MCQ Editor वाला JSON पेस्ट करें..." style="font-family: monospace;"></textarea>
+            <label>MCQ Questions (JSON)</label>
+            <textarea id="chapQuestions" class="form-control" placeholder="यहाँ DOCX MCQ Editor वाला JSON पेस्ट करें..." style="font-family: monospace; height:120px;"></textarea>
           </div>
           
           <div style="display: flex; gap: 10px;">
@@ -161,15 +197,26 @@
         </div>
 
         <div class="panel">
-          <h3><i class="fas fa-list"></i> जुड़े हुए चैप्टर (<span id="chapCount">0</span>)</h3>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <h3 style="margin:0;"><i class="fas fa-list"></i> चैप्टर लिस्ट (<span id="chapCount">0</span>)</h3>
+          </div>
+          <p style="font-size: 12px; color: #6b7280; margin-top: 0;">(क्रम बदलने के लिए ड्रैग एंड ड्रॉप करें)</p>
+          
           <div id="chapterList" style="min-height: 150px; margin-bottom: 15px;">
             <p style="color:#888; font-size:14px;">अभी कोई चैप्टर नहीं जोड़ा गया है।</p>
           </div>
+          
           <div style="display: flex; flex-direction: column; gap: 10px;">
-            <button class="btn btn-primary" onclick="previewBook()" style="justify-content: center;"><i class="fas fa-eye"></i> Preview Book</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-dark" onclick="exportProject()" style="flex: 1; justify-content: center; font-size: 13px;"><i class="fas fa-file-export"></i> Export JSON</button>
+                <button class="btn btn-dark" onclick="document.getElementById('importFile').click()" style="flex: 1; justify-content: center; font-size: 13px;"><i class="fas fa-file-import"></i> Import JSON</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importProject(event)">
+            </div>
             
-            <button class="btn btn-success" onclick="generateOptimizedPDF()" id="pdfBtn" style="justify-content: center; background: #059669; font-size: 16px;">
-                <i class="fas fa-file-download"></i> Download PDF (Optimized Size)
+            <button class="btn btn-primary" onclick="previewBook()" style="justify-content: center; font-size: 16px; padding: 12px;"><i class="fas fa-eye"></i> Preview Book</button>
+            
+            <button class="btn btn-success" onclick="window.print()" id="pdfBtn" style="justify-content: center; background: #059669; font-size: 15px; padding: 12px;">
+                <i class="fas fa-file-pdf"></i> Download Print (Selectable Text)
             </button>
             
             <button class="btn btn-danger" onclick="clearAll()" style="justify-content: center;"><i class="fas fa-trash"></i> सब डिलीट करें</button>
@@ -181,20 +228,91 @@
     </div>
 </div>
 
+<!-- Quill.js Initialization -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script>
-const { jsPDF } = window.jspdf;
+var quill = new Quill('#editor-container', {
+  theme: 'snow',
+  modules: {
+      toolbar: [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['clean']
+      ]
+  },
+  placeholder: 'यहाँ अपने नोट्स टाइप करें या कॉपी-पेस्ट करें...'
+});
+
 let bookData = { chapters: [] };
 let editingIndex = -1; 
 let customLogoBase64 = "";
 
+document.addEventListener('DOMContentLoaded', function() {
+    loadFromLocal();
+    var el = document.getElementById('chapterList');
+    new Sortable(el, {
+        animation: 150, handle: '.drag-handle',
+        onEnd: function (evt) {
+            if(evt.oldIndex === evt.newIndex) return;
+            const movedItem = bookData.chapters.splice(evt.oldIndex, 1)[0];
+            bookData.chapters.splice(evt.newIndex, 0, movedItem);
+            saveToLocal(); updateChapterUI(); previewBook();
+        }
+    });
+});
+
+function exportProject() {
+    if(bookData.chapters.length === 0) { alert("एक्सपोर्ट करने के लिए कोई डेटा नहीं है।"); return; }
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bookData));
+    const a = document.createElement('a'); a.setAttribute("href", dataStr); a.setAttribute("download", "Mockrise_Book_Project.json");
+    document.body.appendChild(a); a.click(); a.remove();
+}
+
+function importProject(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            if(importedData && importedData.chapters) {
+                bookData = importedData; saveToLocal(); updateChapterUI(); previewBook(); alert("प्रोजेक्ट सफलतापूर्वक इम्पोर्ट हो गया!");
+            } else { alert("अमान्य JSON फाइल!"); }
+        } catch(err) { alert("फाइल पढ़ने में त्रुटि: " + err.message); }
+        document.getElementById('importFile').value = ""; 
+    };
+    reader.readAsText(file);
+}
+
+function updateSettings() {
+    const pSize = document.getElementById('paperSize').value;
+    const cols = document.getElementById('colCount').value;
+    const fSize = document.getElementById('fontSize').value;
+    
+    document.documentElement.style.setProperty('--page-width', pSize === 'A4' ? '794px' : '559px');
+    document.documentElement.style.setProperty('--page-height', pSize === 'A4' ? '1123px' : '794px');
+    document.documentElement.style.setProperty('--col-count', cols);
+    document.documentElement.style.setProperty('--font-size', fSize);
+
+    // Apply Dynamic Print Media CSS
+    let styleEl = document.getElementById('dynamicPrintStyles');
+    if(!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'dynamicPrintStyles'; document.head.appendChild(styleEl); }
+    styleEl.innerHTML = `
+        #containerA .middleLine { display: ${cols === '1' ? 'none' : 'block'}; }
+        @media print {
+            @page { size: ${pSize}; margin: 0; }
+            .page { width: ${pSize === 'A4' ? '210mm' : '148mm'} !important; height: ${pSize === 'A4' ? '297mm' : '210mm'} !important; }
+        }
+    `;
+    saveToLocal();
+    if(bookData.chapters.length > 0) previewBook();
+}
+
 function updateWatermark() {
-    const rot = document.getElementById('wmRotation').value;
     const zoom = document.getElementById('wmZoom').value;
     const op = document.getElementById('wmOpacity').value;
-    document.getElementById('rotVal').innerText = rot + '°';
     document.getElementById('zoomVal').innerText = zoom + 'x';
     document.getElementById('opVal').innerText = op;
-    document.documentElement.style.setProperty('--wm-rot', rot + 'deg');
     document.documentElement.style.setProperty('--wm-scale', zoom);
     document.documentElement.style.setProperty('--wm-op', op);
     saveToLocal();
@@ -202,19 +320,22 @@ function updateWatermark() {
 
 function updateBrandText() {
     const brandName = document.getElementById('brandText').value;
-    document.querySelectorAll('#containerA .running-right').forEach(el => {
-        el.innerText = brandName;
-    });
+    document.querySelectorAll('#containerA .running-right').forEach(el => { el.innerText = brandName; });
     saveToLocal();
 }
 
 function saveToLocal() {
     localStorage.setItem('mockriseBook', JSON.stringify(bookData));
     localStorage.setItem('mockriseLogo', customLogoBase64);
-    localStorage.setItem('wmRot', document.getElementById('wmRotation').value);
     localStorage.setItem('wmZoom', document.getElementById('wmZoom').value);
     localStorage.setItem('wmOp', document.getElementById('wmOpacity').value);
     localStorage.setItem('mockriseBrand', document.getElementById('brandText').value);
+    
+    // Save Settings
+    localStorage.setItem('m_pSize', document.getElementById('paperSize').value);
+    localStorage.setItem('m_cols', document.getElementById('colCount').value);
+    localStorage.setItem('m_ans', document.getElementById('ansStyle').value);
+    localStorage.setItem('m_fs', document.getElementById('fontSize').value);
 }
 
 function loadFromLocal() {
@@ -223,33 +344,26 @@ function loadFromLocal() {
     let savedLogo = localStorage.getItem('mockriseLogo');
     if(savedLogo) customLogoBase64 = savedLogo;
 
-    let sRot = localStorage.getItem('wmRot');
-    let sZoom = localStorage.getItem('wmZoom');
-    let sOp = localStorage.getItem('wmOp');
-    let sBrand = localStorage.getItem('mockriseBrand');
+    if (localStorage.getItem('mockriseBrand') !== null) document.getElementById('brandText').value = localStorage.getItem('mockriseBrand');
+    if (localStorage.getItem('wmZoom') !== null) document.getElementById('wmZoom').value = localStorage.getItem('wmZoom');
+    if (localStorage.getItem('wmOp') !== null) document.getElementById('wmOpacity').value = localStorage.getItem('wmOp');
     
-    if (sBrand !== null) document.getElementById('brandText').value = sBrand;
+    if (localStorage.getItem('m_pSize')) document.getElementById('paperSize').value = localStorage.getItem('m_pSize');
+    if (localStorage.getItem('m_cols')) document.getElementById('colCount').value = localStorage.getItem('m_cols');
+    if (localStorage.getItem('m_ans')) document.getElementById('ansStyle').value = localStorage.getItem('m_ans');
+    if (localStorage.getItem('m_fs')) document.getElementById('fontSize').value = localStorage.getItem('m_fs');
 
-    if(sRot !== null) {
-        document.getElementById('wmRotation').value = sRot;
-        document.getElementById('wmZoom').value = sZoom;
-        document.getElementById('wmOpacity').value = sOp;
-        updateWatermark();
-    }
+    updateWatermark();
+    updateSettings();
     updateChapterUI();
     if(bookData.chapters.length > 0) previewBook();
 }
-window.addEventListener('load', loadFromLocal);
 
 function handleLogoUpload() {
     const file = document.getElementById('logoUpload').files[0];
     if(file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-            customLogoBase64 = e.target.result;
-            saveToLocal();
-            if(bookData.chapters.length > 0) previewBook();
-        }
+        reader.onload = function(e) { customLogoBase64 = e.target.result; saveToLocal(); if(bookData.chapters.length > 0) previewBook(); }
         reader.readAsDataURL(file);
     }
 }
@@ -264,7 +378,7 @@ function updateChapterUI() {
   }
   bookData.chapters.forEach((ch, idx) => {
     list.innerHTML += `<div class="chapter-list-item" id="list-item-${idx}" onclick="loadChapterToEdit(${idx})" title="क्लिक करके एडिट करें">
-        <span>${idx + 1}. ${ch.title}</span>
+        <div><i class="fas fa-grip-vertical drag-handle"></i> <span>${idx + 1}. ${ch.title}</span></div>
         <i class="fas fa-times" style="color:#ef4444; cursor:pointer; padding:5px;" onclick="event.stopPropagation(); deleteChapter(${idx})"></i>
       </div>`;
   });
@@ -274,45 +388,26 @@ function loadChapterToEdit(idx) {
   editingIndex = idx;
   const ch = bookData.chapters[idx];
   document.getElementById('chapTitle').value = ch.title;
-  document.getElementById('chapNotes').value = ch.notes || '';
-  if (ch.questions && ch.questions.length > 0) {
-      document.getElementById('chapQuestions').value = JSON.stringify(ch.questions, null, 2);
-  } else { document.getElementById('chapQuestions').value = ''; }
+  quill.root.innerHTML = ch.notes || '';
+  if (ch.questions && ch.questions.length > 0) { document.getElementById('chapQuestions').value = JSON.stringify(ch.questions, null, 2); } 
+  else { document.getElementById('chapQuestions').value = ''; }
 
   document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> चैप्टर अपडेट करें';
-  const saveBtn = document.getElementById('saveBtn');
-  saveBtn.innerHTML = '<i class="fas fa-check"></i> अपडेट सेव करें';
-  saveBtn.classList.replace('btn-primary', 'btn-success');
+  const saveBtn = document.getElementById('saveBtn'); saveBtn.innerHTML = '<i class="fas fa-check"></i> अपडेट सेव करें'; saveBtn.classList.replace('btn-primary', 'btn-success');
   document.getElementById('cancelEditBtn').style.display = 'block';
-
-  if (!document.getElementById(`chapter-page-${idx}`)) previewBook();
-  const targetPage = document.getElementById(`chapter-page-${idx}`);
-  if(targetPage) {
-      targetPage.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      document.querySelectorAll('#containerA .chapter-list-item').forEach((el, i) => {
-          el.style.borderLeft = i === idx ? '4px solid #10b981' : '1px solid #e2e8f0';
-          el.style.background = i === idx ? '#ecfdf5' : '#f8fafc';
-      });
-  }
 }
 
 function cancelEdit() {
   editingIndex = -1;
-  document.getElementById('chapTitle').value = '';
-  document.getElementById('chapNotes').value = '';
-  document.getElementById('chapQuestions').value = '';
+  document.getElementById('chapTitle').value = ''; quill.root.innerHTML = ''; document.getElementById('chapQuestions').value = '';
   document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus-circle"></i> नया चैप्टर जोड़ें';
-  const saveBtn = document.getElementById('saveBtn');
-  saveBtn.innerHTML = '<i class="fas fa-save"></i> चैप्टर लिस्ट में सेव करें';
-  saveBtn.classList.replace('btn-success', 'btn-primary');
+  const saveBtn = document.getElementById('saveBtn'); saveBtn.innerHTML = '<i class="fas fa-save"></i> चैप्टर लिस्ट में सेव करें'; saveBtn.classList.replace('btn-success', 'btn-primary');
   document.getElementById('cancelEditBtn').style.display = 'none';
-  document.querySelectorAll('#containerA .chapter-list-item').forEach(el => { el.style.borderLeft = '1px solid #e2e8f0'; el.style.background = '#f8fafc'; });
 }
 
 function deleteChapter(idx) {
   if(confirm("क्या आप इस चैप्टर को डिलीट करना चाहते हैं?")) {
-      bookData.chapters.splice(idx, 1);
-      if(editingIndex === idx) cancelEdit();
+      bookData.chapters.splice(idx, 1); if(editingIndex === idx) cancelEdit();
       saveToLocal(); updateChapterUI(); previewBook();
   }
 }
@@ -326,7 +421,8 @@ function clearAll() {
 
 function addChapter() {
   const cTitle = document.getElementById('chapTitle').value.trim();
-  const cNotes = document.getElementById('chapNotes').value.trim();
+  let cNotes = quill.root.innerHTML;
+  if(cNotes === '<p><br></p>') cNotes = ''; // Empty quill check
   let cQuestionsRaw = document.getElementById('chapQuestions').value.trim();
 
   if(!cTitle) { alert("कृपया चैप्टर का नाम दर्ज करें!"); return; }
@@ -345,95 +441,24 @@ function addChapter() {
   }
 
   if (editingIndex > -1) { bookData.chapters[editingIndex] = { title: cTitle, notes: cNotes, questions: uniqueQArray }; cancelEdit(); } 
-  else { bookData.chapters.push({ title: cTitle, notes: cNotes, questions: uniqueQArray }); document.getElementById('chapTitle').value = ''; document.getElementById('chapNotes').value = ''; document.getElementById('chapQuestions').value = ''; }
+  else { bookData.chapters.push({ title: cTitle, notes: cNotes, questions: uniqueQArray }); document.getElementById('chapTitle').value = ''; quill.root.innerHTML = ''; document.getElementById('chapQuestions').value = ''; }
   saveToLocal(); updateChapterUI(); previewBook(); 
-}
-
-function appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, isContinuation = false, depth = 0) {
-    if (depth > 20) {
-        const forced = document.createElement('div');
-        forced.className = baseClassName;
-        forced.innerHTML = htmlStr;
-        currentTarget.appendChild(forced);
-        return currentTarget;
-    }
-
-    const div = document.createElement('div');
-    div.className = baseClassName + (isContinuation ? " split-bottom" : "");
-    div.innerHTML = htmlStr;
-    div.setAttribute('contenteditable', 'true'); 
-    div.setAttribute('spellcheck', 'false');
-    currentTarget.appendChild(div);
-
-    if (currentTarget.scrollHeight <= currentTarget.clientHeight + 2) {
-        return currentTarget;
-    }
-
-    currentTarget.removeChild(div);
-
-    if (currentTarget.innerHTML.trim() === "") {
-        currentTarget.appendChild(div);
-        return nextColFunc();
-    }
-
-    const trimmedHTML = htmlStr.trim().toLowerCase();
-    if (trimmedHTML.startsWith("<table") || trimmedHTML.startsWith("<div") || trimmedHTML.startsWith("<ul") || trimmedHTML.startsWith("<ol") || trimmedHTML.startsWith("<h")) {
-        currentTarget = nextColFunc();
-        return appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, false, depth + 1);
-    }
-
-    let words = htmlStr.split(" "); 
-    let part = ""; 
-    let fittedIndex = -1;
-    
-    const tempDiv = document.createElement('div');
-    tempDiv.className = baseClassName + (isContinuation ? " split-bottom" : "");
-    currentTarget.appendChild(tempDiv);
-
-    for (let i = 0; i < words.length; i++) {
-        let testText = part + (i === 0 ? "" : " ") + words[i];
-        tempDiv.innerHTML = testText;
-        if (currentTarget.scrollHeight > currentTarget.clientHeight) {
-            break; 
-        } else { 
-            part = testText; 
-            fittedIndex = i; 
-        }
-    }
-    tempDiv.remove();
-
-    if (part.trim() === "" || fittedIndex === -1) {
-        currentTarget = nextColFunc();
-        return appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, false, depth + 1);
-    }
-
-    const topPart = document.createElement('div');
-    topPart.className = baseClassName + (isContinuation ? " split-bottom split-top" : " split-top");
-    topPart.innerHTML = part; 
-    topPart.setAttribute('contenteditable', 'true'); 
-    topPart.setAttribute('spellcheck', 'false');
-    currentTarget.appendChild(topPart);
-    
-    let remainingHTML = words.slice(fittedIndex + 1).join(" ");
-    currentTarget = nextColFunc();
-    return appendWithSplit(remainingHTML, baseClassName, currentTarget, nextColFunc, true, depth + 1);
 }
 
 function createPage(pageNo, title, chapterNum, isFirst, chapName, chIndex) {
     const p = document.createElement('div'); p.className = 'page';
     if (isFirst && chIndex !== undefined) p.id = `chapter-page-${chIndex}`;
-    
     const brandName = document.getElementById('brandText') ? document.getElementById('brandText').value : 'Mockrise';
     
-    let header = isFirst ? `<div class="page-header"></div><div class="strip"></div><div class="page-title" contenteditable="true" spellcheck="false">${chapterNum}. ${title}</div>` : `<div class="running-header"><div class="running-left" contenteditable="true" spellcheck="false">${chapName}</div><div class="running-right" contenteditable="true" spellcheck="false">${brandName}</div></div><div class="header-line"></div>`;
+    let header = isFirst ? `<div class="page-header"></div><div class="strip"></div><div class="page-title">${chapterNum}. ${title}</div>` : `<div class="running-header"><div class="running-left">${chapName}</div><div class="running-right">${brandName}</div></div><div class="header-line"></div>`;
     let watermarkHTML = customLogoBase64 ? `<img class="watermark" src="${customLogoBase64}" />` : "";
-    p.innerHTML = `${watermarkHTML}${header}<div class="content-area"><div class="col col-left"></div><div class="col col-right"></div></div><div class="middleLine"></div><div class="bottomLine"></div><div class="page-footer">${pageNo}</div>`;
+    p.innerHTML = `${watermarkHTML}${header}<div class="content-area"></div><div class="middleLine"></div><div class="bottomLine"></div><div class="page-footer">${pageNo}</div>`;
     return p;
 }
 
 function createIndexPage(chapters) {
     const div = document.createElement('div'); div.className = 'page index-page';
-    let rows = chapters.map((c, i) => `<tr><td>${i + 1}.</td><td contenteditable="true" spellcheck="false">${c.title}</td><td>${c.start} – ${c.end}</td></tr>`).join('');
+    let rows = chapters.map((c, i) => `<tr><td>${i + 1}.</td><td>${c.title}</td><td>${c.start} – ${c.end}</td></tr>`).join('');
     let watermarkHTML = customLogoBase64 ? `<img class="watermark" src="${customLogoBase64}" />` : "";
     div.innerHTML = `${watermarkHTML}<div class="page-header"></div><div class="strip"></div><div class="page-title">विषय सूची</div><div class="content-area"><table><thead><tr><th>क्र.सं.</th><th>अध्याय</th><th>पृष्ठ सं.</th></tr></thead><tbody>${rows}</tbody></table></div>`;
     return div;
@@ -442,107 +467,97 @@ function createIndexPage(chapters) {
 function previewBook() {
     const preview = document.getElementById('preview'); preview.innerHTML = '';
     if (!bookData || !bookData.chapters || !bookData.chapters.length) return; 
-    let globalPage = 1; const chapterPages = [];
+    
+    let globalPage = 1; 
+    const chapterPages = [];
+    const ansStyle = document.getElementById('ansStyle').value; // 'inline' or 'end'
     
     bookData.chapters.forEach((ch, idx) => {
         const startPage = globalPage;
-        let currentPageObj = createPage(globalPage, ch.title, idx + 1, true, ch.title, idx);
-        preview.appendChild(currentPageObj);
-        let currentLeft = currentPageObj.querySelector('.col-left'); let currentRight = currentPageObj.querySelector('.col-right');
-        let currentTarget = currentLeft;
+        let chapterAnswers = []; // Store answers if ansStyle is 'end'
         
-        const getNextCol = () => {
-            if (currentTarget === currentLeft) return currentRight;
-            else {
-                globalPage++; let newPage = createPage(globalPage, ch.title, idx + 1, false, ch.title);
-                preview.appendChild(newPage);
-                currentLeft = newPage.querySelector('.col-left'); currentRight = newPage.querySelector('.col-right');
-                return currentLeft;
-            }
-        };
-
-        if (ch.notes) currentTarget = appendWithSplit(ch.notes, "notes", currentTarget, getNextCol);
+        const tempContainer = document.createElement('div');
+        if (ch.notes) {
+            const notesWrapper = document.createElement('div');
+            notesWrapper.className = 'notes';
+            notesWrapper.innerHTML = ch.notes;
+            tempContainer.appendChild(notesWrapper);
+        }
         
         ch.questions.forEach((q, qIdx) => {
-            const qText = q.question ? q.question.replace(/\n/g, '<br>') : '';
-            let qHtml = `<b>${qIdx + 1}. ${qText}</b>`;
-            currentTarget = appendWithSplit(qHtml, "qbox", currentTarget, getNextCol);
-            
+            const qBlock = document.createElement('div');
+            qBlock.className = 'q-block';
+            let qHtml = `<div class="qbox"><b>${qIdx + 1}. ${q.question ? q.question.replace(/\n/g, '<br>') : ''}</b></div>`;
             const optsArray = q.options || q.option || [];
-            if (optsArray.length > 0) {
-                optsArray.forEach((o, i) => {
-                    const optText = o.replace(/\n/g, '<br>');
-                    let optHtml = `(${i + 1}) ${optText}`;
-                    currentTarget = appendWithSplit(optHtml, "opt", currentTarget, getNextCol);
-                });
-            }
+            optsArray.forEach((o, i) => { qHtml += `<div class="opt">(${['A','B','C','D'][i] || i+1}) ${o.replace(/\n/g, '<br>')}</div>`; });
+            
             let ansText = "";
             if (q.answer) ansText = q.answer.toString().replace(/\n/g, '<br>');
             else if (q.correct_index !== undefined) ansText = (q.correct_index + 1).toString();
-
             let expText = (q.exp || q.explanation || q.solution || '').replace(/\n/g, '<br>');
+            
             if (expText || ansText) {
-                let content = '';
-                if (ansText) content += `<div class="ans" style="margin-bottom:4px; margin-top:8px;"><b>उत्तर: (${ansText})</b></div>`;
-                if (expText) content += `<span><b>व्याख्या:</b> ${expText}</span>`;
-                currentTarget = appendWithSplit(content, "exp", currentTarget, getNextCol);
+                if(ansStyle === 'inline') {
+                    qHtml += `<div class="exp">`;
+                    if (ansText) qHtml += `<div class="ans" style="margin-bottom:4px;"><b>उत्तर: (${ansText})</b></div>`;
+                    if (expText) qHtml += `<span><b>व्याख्या:</b> ${expText}</span>`;
+                    qHtml += `</div>`;
+                } else {
+                    chapterAnswers.push({ num: qIdx + 1, ans: ansText, exp: expText });
+                }
+            }
+            qBlock.innerHTML = qHtml;
+            tempContainer.appendChild(qBlock);
+        });
+
+        // APPEND ANSWER KEY AT THE END OF CHAPTER IF APPLICABLE
+        if(ansStyle === 'end' && chapterAnswers.length > 0) {
+            const akBlock = document.createElement('div');
+            akBlock.className = 'notes'; // use notes class for h3 styling
+            let akHtml = `<h3 style="display:block; text-align:center; margin-top:20px; margin-bottom:10px;">उत्तर कुंजी एवं व्याख्या</h3>`;
+            
+            chapterAnswers.forEach(ans => {
+                akHtml += `<div class="exp" style="margin-top:8px;">`;
+                akHtml += `<div class="ans" style="margin-bottom:4px; color:#2563eb;"><b>प्र. ${ans.num} का उत्तर: (${ans.ans})</b></div>`;
+                if(ans.exp) akHtml += `<span><b>व्याख्या:</b> ${ans.exp}</span>`;
+                akHtml += `</div>`;
+            });
+            akBlock.innerHTML = akHtml;
+            tempContainer.appendChild(akBlock);
+        }
+
+        const allNodes = Array.from(tempContainer.childNodes);
+        let currentPage = createPage(globalPage, ch.title, idx + 1, true, ch.title, idx);
+        preview.appendChild(currentPage);
+        let contentArea = currentPage.querySelector('.content-area');
+
+        allNodes.forEach(node => {
+            if (node.nodeType === 3 && node.textContent.trim() === '') return;
+            
+            contentArea.appendChild(node.cloneNode(true));
+            
+            if (contentArea.scrollHeight > contentArea.clientHeight) {
+                if(contentArea.childNodes.length > 1) {
+                    contentArea.lastChild.remove();
+                    
+                    globalPage++;
+                    currentPage = createPage(globalPage, ch.title, idx + 1, false, ch.title);
+                    preview.appendChild(currentPage);
+                    contentArea = currentPage.querySelector('.content-area');
+                    
+                    contentArea.appendChild(node.cloneNode(true));
+                }
             }
         });
-        chapterPages.push({ title: ch.title, start: startPage, end: globalPage }); globalPage++;
+
+        chapterPages.push({ title: ch.title, start: startPage, end: globalPage }); 
+        globalPage++;
     });
-    const indexPage = createIndexPage(chapterPages); preview.insertBefore(indexPage, preview.firstChild);
+    
+    const indexPage = createIndexPage(chapterPages); 
+    preview.insertBefore(indexPage, preview.firstChild);
 
-    if (window.MathJax) {
-        MathJax.typesetPromise([preview]).catch((err) => console.log('MathJax Error:', err.message));
-    }
-}
-
-async function generateOptimizedPDF() {
-    const preview = document.getElementById('preview');
-    if (!preview.innerHTML || preview.innerHTML.trim() === '') { 
-        alert("कृपया पहले 'Preview Book' पर क्लिक करें!"); 
-        return; 
-    }
-    
-    const pdfBtn = document.getElementById('pdfBtn'); 
-    pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Compressing & Generating PDF...'; 
-    pdfBtn.disabled = true;
-    
-    await new Promise(r => setTimeout(r, 100));
-    
-    const pages = document.querySelectorAll('#containerA .page');
-    if (pages.length === 0) { 
-        alert("कोई पेज नहीं मिला!"); 
-        pdfBtn.innerHTML = '<i class="fas fa-file-download"></i> Download PDF (Optimized Size)'; 
-        pdfBtn.disabled = false; 
-        return; 
-    }
-    
-    const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
-    
-    for (let i = 0; i < pages.length; i++) {
-        if (i > 0) pdf.addPage();
-        
-        const canvas = await html2canvas(pages[i], { 
-            scale: 2, 
-            useCORS: true, 
-            allowTaint: true, 
-            logging: false, 
-            backgroundColor: '#ffffff' 
-        });
-        
-        const imgData = canvas.toDataURL('image/jpeg', 0.60);
-        
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-    }
-    
-    pdf.save('Mockrise_Book_Optimized.pdf');
-    
-    pdfBtn.innerHTML = '<i class="fas fa-file-download"></i> Download PDF (Optimized Size)'; 
-    pdfBtn.disabled = false;
+    if (window.MathJax) { MathJax.typesetPromise([preview]).catch((err) => console.log('MathJax Error:', err.message)); }
 }
 </script>
 </body>
