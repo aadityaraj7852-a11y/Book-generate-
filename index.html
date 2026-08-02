@@ -36,7 +36,6 @@
     #containerA .form-group { margin-bottom: 15px; }
     #containerA .form-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #374151; }
     #containerA .form-control { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; box-sizing: border-box; }
-    #containerA textarea.form-control { min-height: 100px; resize: vertical; }
     
     #containerA .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; font-family: 'Poppins', sans-serif;}
     #containerA .btn:hover { opacity: 0.9; }
@@ -47,14 +46,13 @@
     
     #containerA .chapter-list-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; cursor: pointer; transition: 0.3s; }
     #containerA .chapter-list-item:hover { background: #eff6ff; border-color: #93c5fd; }
-    #containerA [contenteditable="true"]:focus { outline: 2px dashed #2563eb; background: #eff6ff; border-radius: 4px; padding: 2px; }
     
     .sortable-ghost { opacity: 0.4; background: #e2e8f0 !important; }
     .drag-handle { cursor: grab; color: #9ca3af; padding-right: 10px; }
 
     #containerA .preview-area { background: white; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); padding: 20px; overflow-x: auto; scroll-behavior: smooth; }
     
-    /* ORIGINAL PAGE UI (Restored) */
+    /* ORIGINAL PAGE UI (Safe and Secure) */
     #containerA .page { width: 794px; height: 1123px; background: white; margin: 20px auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; font-size: 15px; line-height: 1.4; }
 
     :root { --wm-rot: -45deg; --wm-scale: 1.5; --wm-op: 0.12; }
@@ -71,27 +69,24 @@
     #containerA .running-right { float: right; font-family: 'Poppins', sans-serif;}
     #containerA .header-line { position:absolute; top: 130px; left: 60px; right: 60px; height: 2px; background: #000; z-index: 2;}
     
-    /* RESTORED ORIGINAL CONTENT AREA & LINES */
+    /* FIXED COLUMNS FOR RELIABLE SPLITTING */
     #containerA .content-area { position: absolute; top: 160px; bottom: 100px; left: 60px; right: 60px; display: flex; gap: 40px; }
     #containerA .col { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
     #containerA .middleLine { position: absolute; top: 160px; bottom: 100px; left: 50%; width: 2px; background: #000; z-index: 2; }
     #containerA .bottomLine { position: absolute; bottom: 80px; left: 60px; right: 60px; border-top: 2px solid #000; z-index: 2;}
 
-    #containerA .notes h1 { font-size: 22px; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; padding: 10px 16px; background: #000000; border-radius: 6px; display: inline-block; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+    /* Styling applied to blocks passed into columns */
+    #containerA .notes h1, #containerA .notes h2, #containerA .notes h3 { font-size: 22px; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; padding: 10px 16px; background: #000000; border-radius: 6px; display: inline-block; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+    #containerA .notes p { margin-top: 0; margin-bottom: 12px; }
+    #containerA .notes ul, #containerA .notes ol { margin-top: 0; margin-bottom: 12px; padding-left: 20px; }
     #containerA .notes table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; background: #fff; }
     #containerA .notes th, #containerA .notes td { border: 1px solid #9ca3af; padding: 8px 10px; text-align: left; }
     #containerA .notes th { background: #e5e7eb; font-weight: 700; color: #1f2937; }
     #containerA .notes tr:nth-child(even) { background-color: #f9fafb; }
     
-    #containerA .qbox { margin-bottom: 10px; font-weight: 600; }
-    #containerA .qbox.split-top { margin-bottom: 0; }
-    #containerA .qbox.split-bottom { margin-top: 0; }
+    #containerA .qbox { margin-bottom: 4px; font-weight: 600; }
     #containerA .opt { margin-left: 16px; margin-bottom: 4px; }
-    #containerA .opt.split-top { margin-bottom: 0; }
-    #containerA .opt.split-bottom { margin-top: 0; }
     #containerA .exp { margin: 8px 0 12px; padding: 10px 14px; border: 1px solid #9ca3af; border-radius: 8px; background: #f9fafb; font-size: 14px; line-height: 1.5; text-align: justify; }
-    #containerA .exp.split-top { border-bottom: 1px dashed #ccc !important; border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; margin-bottom: 0 !important; padding-bottom: 15px !important; }
-    #containerA .exp.split-bottom { border-top: none !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; margin-top: 0 !important; padding-top: 15px !important; }
 
     #containerA .index-page .page-header { height: 160px; background: #e6e6e6; }
     #containerA .index-page .page-title { top: 80px; transform: translateY(-50%); font-size: 32px; background: #333; color: white; padding: 12px 50px; border-radius: 8px; left: 50%; transform: translate(-50%, -50%); width: auto; }
@@ -165,7 +160,7 @@
           
           <div class="form-group">
             <label>चैप्टर के नोट्स (Rich Text Editor)</label>
-            <div id="editor-container" style="height: 180px; background: white; border-bottom-left-radius:6px; border-bottom-right-radius:6px;"></div>
+            <div id="editor-container" style="height: 200px; background: white; border-bottom-left-radius:6px; border-bottom-right-radius:6px;"></div>
           </div>
           
           <div class="form-group">
@@ -198,7 +193,7 @@
                 <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importProject(event)">
             </div>
             
-            <button class="btn btn-primary" onclick="previewBook()" style="justify-content: center;"><i class="fas fa-eye"></i> Preview Book</button>
+            <button class="btn btn-primary" onclick="previewBook()" style="justify-content: center; font-size:16px; padding:12px;"><i class="fas fa-eye"></i> Preview Book</button>
             
             <button class="btn btn-success" onclick="generateOptimizedPDF()" id="pdfBtn" style="justify-content: center; background: #059669; font-size: 14px;">
                 <i class="fas fa-file-image"></i> Download Image PDF (Original)
@@ -399,84 +394,13 @@ function addChapter() {
   saveToLocal(); updateChapterUI(); previewBook(); 
 }
 
-// ORIGINAL PAGINATION ENGINE (RESTORED)
-function appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, isContinuation = false, depth = 0) {
-    if (depth > 20) {
-        const forced = document.createElement('div');
-        forced.className = baseClassName;
-        forced.innerHTML = htmlStr;
-        currentTarget.appendChild(forced);
-        return currentTarget;
-    }
-
-    const div = document.createElement('div');
-    div.className = baseClassName + (isContinuation ? " split-bottom" : "");
-    div.innerHTML = htmlStr;
-    div.setAttribute('contenteditable', 'true'); 
-    div.setAttribute('spellcheck', 'false');
-    currentTarget.appendChild(div);
-
-    if (currentTarget.scrollHeight <= currentTarget.clientHeight + 2) {
-        return currentTarget;
-    }
-
-    currentTarget.removeChild(div);
-
-    if (currentTarget.innerHTML.trim() === "") {
-        currentTarget.appendChild(div);
-        return nextColFunc();
-    }
-
-    const trimmedHTML = htmlStr.trim().toLowerCase();
-    if (trimmedHTML.startsWith("<table") || trimmedHTML.startsWith("<div") || trimmedHTML.startsWith("<ul") || trimmedHTML.startsWith("<ol") || trimmedHTML.startsWith("<h")) {
-        currentTarget = nextColFunc();
-        return appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, false, depth + 1);
-    }
-
-    let words = htmlStr.split(" "); 
-    let part = ""; 
-    let fittedIndex = -1;
-    
-    const tempDiv = document.createElement('div');
-    tempDiv.className = baseClassName + (isContinuation ? " split-bottom" : "");
-    currentTarget.appendChild(tempDiv);
-
-    for (let i = 0; i < words.length; i++) {
-        let testText = part + (i === 0 ? "" : " ") + words[i];
-        tempDiv.innerHTML = testText;
-        if (currentTarget.scrollHeight > currentTarget.clientHeight) {
-            break; 
-        } else { 
-            part = testText; 
-            fittedIndex = i; 
-        }
-    }
-    tempDiv.remove();
-
-    if (part.trim() === "" || fittedIndex === -1) {
-        currentTarget = nextColFunc();
-        return appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, false, depth + 1);
-    }
-
-    const topPart = document.createElement('div');
-    topPart.className = baseClassName + (isContinuation ? " split-bottom split-top" : " split-top");
-    topPart.innerHTML = part; 
-    topPart.setAttribute('contenteditable', 'true'); 
-    topPart.setAttribute('spellcheck', 'false');
-    currentTarget.appendChild(topPart);
-    
-    let remainingHTML = words.slice(fittedIndex + 1).join(" ");
-    currentTarget = nextColFunc();
-    return appendWithSplit(remainingHTML, baseClassName, currentTarget, nextColFunc, true, depth + 1);
-}
-
 function createPage(pageNo, title, chapterNum, isFirst, chapName, chIndex) {
     const p = document.createElement('div'); p.className = 'page';
     if (isFirst && chIndex !== undefined) p.id = `chapter-page-${chIndex}`;
     
     const brandName = document.getElementById('brandText') ? document.getElementById('brandText').value : 'Mockrise';
     
-    let header = isFirst ? `<div class="page-header"></div><div class="strip"></div><div class="page-title" contenteditable="true" spellcheck="false">${chapterNum}. ${title}</div>` : `<div class="running-header"><div class="running-left" contenteditable="true" spellcheck="false">${chapName}</div><div class="running-right" contenteditable="true" spellcheck="false">${brandName}</div></div><div class="header-line"></div>`;
+    let header = isFirst ? `<div class="page-header"></div><div class="strip"></div><div class="page-title">${chapterNum}. ${title}</div>` : `<div class="running-header"><div class="running-left">${chapName}</div><div class="running-right">${brandName}</div></div><div class="header-line"></div>`;
     let watermarkHTML = customLogoBase64 ? `<img class="watermark" src="${customLogoBase64}" />` : "";
     p.innerHTML = `${watermarkHTML}${header}<div class="content-area"><div class="col col-left"></div><div class="col col-right"></div></div><div class="middleLine"></div><div class="bottomLine"></div><div class="page-footer">${pageNo}</div>`;
     return p;
@@ -484,10 +408,35 @@ function createPage(pageNo, title, chapterNum, isFirst, chapName, chIndex) {
 
 function createIndexPage(chapters) {
     const div = document.createElement('div'); div.className = 'page index-page';
-    let rows = chapters.map((c, i) => `<tr><td>${i + 1}.</td><td contenteditable="true" spellcheck="false">${c.title}</td><td>${c.start} – ${c.end}</td></tr>`).join('');
+    let rows = chapters.map((c, i) => `<tr><td>${i + 1}.</td><td>${c.title}</td><td>${c.start} – ${c.end}</td></tr>`).join('');
     let watermarkHTML = customLogoBase64 ? `<img class="watermark" src="${customLogoBase64}" />` : "";
     div.innerHTML = `${watermarkHTML}<div class="page-header"></div><div class="strip"></div><div class="page-title">विषय सूची</div><div class="content-area"><table><thead><tr><th>क्र.सं.</th><th>अध्याय</th><th>पृष्ठ सं.</th></tr></thead><tbody>${rows}</tbody></table></div>`;
     return div;
+}
+
+/* NEW ROBUST NODE PAGINATION ENGINE (Fixes the Rich Text HTML Bug) */
+function appendSmart(htmlStr, baseClassName, currentCol, getNextCol) {
+    const temp = document.createElement('div');
+    temp.innerHTML = htmlStr;
+    const children = Array.from(temp.childNodes);
+
+    for (let child of children) {
+        if (child.nodeType === 3 && child.textContent.trim() === '') continue; // Skip blank spaces
+        
+        const wrapper = document.createElement('div');
+        wrapper.className = baseClassName;
+        wrapper.appendChild(child.cloneNode(true));
+        
+        currentCol.appendChild(wrapper);
+
+        // Check if adding this block overflows the column
+        if (currentCol.scrollHeight > currentCol.clientHeight + 5) {
+            currentCol.removeChild(wrapper);
+            currentCol = getNextCol();
+            currentCol.appendChild(wrapper);
+        }
+    }
+    return currentCol;
 }
 
 function previewBook() {
@@ -508,28 +457,36 @@ function previewBook() {
         let chapterAnswers = [];
         
         const getNextCol = () => {
-            if (currentTarget === currentLeft) return currentRight;
-            else {
-                globalPage++; let newPage = createPage(globalPage, ch.title, idx + 1, false, ch.title);
+            if (currentTarget === currentLeft) {
+                currentTarget = currentRight;
+            } else {
+                globalPage++; 
+                let newPage = createPage(globalPage, ch.title, idx + 1, false, ch.title);
                 preview.appendChild(newPage);
-                currentLeft = newPage.querySelector('.col-left'); currentRight = newPage.querySelector('.col-right');
-                return currentLeft;
+                currentLeft = newPage.querySelector('.col-left'); 
+                currentRight = newPage.querySelector('.col-right');
+                currentTarget = currentLeft;
             }
+            return currentTarget;
         };
 
-        if (ch.notes) currentTarget = appendWithSplit(ch.notes, "notes", currentTarget, getNextCol);
+        // Appending Notes properly line-by-line / block-by-block
+        if (ch.notes) {
+            currentTarget = appendSmart(ch.notes, "notes", currentTarget, getNextCol);
+        }
         
+        // Appending Questions
         ch.questions.forEach((q, qIdx) => {
             const qText = q.question ? q.question.replace(/\n/g, '<br>') : '';
             let qHtml = `<b>${qIdx + 1}. ${qText}</b>`;
-            currentTarget = appendWithSplit(qHtml, "qbox", currentTarget, getNextCol);
+            currentTarget = appendSmart(qHtml, "qbox", currentTarget, getNextCol);
             
             const optsArray = q.options || q.option || [];
             if (optsArray.length > 0) {
                 optsArray.forEach((o, i) => {
                     const optText = o.replace(/\n/g, '<br>');
-                    let optHtml = `(${i + 1}) ${optText}`;
-                    currentTarget = appendWithSplit(optHtml, "opt", currentTarget, getNextCol);
+                    let optHtml = `(${['A','B','C','D'][i] || i+1}) ${optText}`;
+                    currentTarget = appendSmart(optHtml, "opt", currentTarget, getNextCol);
                 });
             }
             
@@ -544,23 +501,23 @@ function previewBook() {
                     let content = '';
                     if (ansText) content += `<div class="ans" style="margin-bottom:4px; margin-top:8px;"><b>उत्तर: (${ansText})</b></div>`;
                     if (expText) content += `<span><b>व्याख्या:</b> ${expText}</span>`;
-                    currentTarget = appendWithSplit(content, "exp", currentTarget, getNextCol);
+                    currentTarget = appendSmart(content, "exp", currentTarget, getNextCol);
                 } else {
                     chapterAnswers.push({ num: qIdx + 1, ans: ansText, exp: expText });
                 }
             }
         });
         
-        // Render Answer Key at end of chapter if requested
+        // Render Answer Key at the end
         if(ansStyle === 'end' && chapterAnswers.length > 0) {
             let akTitle = `<h1 style="text-align:center; margin-top:20px; font-size:18px;">उत्तर कुंजी एवं व्याख्या</h1>`;
-            currentTarget = appendWithSplit(akTitle, "notes", currentTarget, getNextCol);
+            currentTarget = appendSmart(akTitle, "notes", currentTarget, getNextCol);
             
             chapterAnswers.forEach(ans => {
                 let content = '';
                 if(ans.ans) content += `<div class="ans" style="margin-bottom:4px; color:#2563eb;"><b>प्र. ${ans.num} का उत्तर: (${ans.ans})</b></div>`;
                 if(ans.exp) content += `<span><b>व्याख्या:</b> ${ans.exp}</span>`;
-                currentTarget = appendWithSplit(content, "exp", currentTarget, getNextCol);
+                currentTarget = appendSmart(content, "exp", currentTarget, getNextCol);
             });
         }
         
