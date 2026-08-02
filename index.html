@@ -3,19 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mockrise - PDF Book Generator</title>
+  <title>Mockrise - PDF Book Generator Pro</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- 7 Hindi Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Mukta:wght@400;700&family=Yatra+One&family=Rozha+One&family=Hind:wght@400;700&family=Tiro+Devanagari+Hindi&family=Noto+Sans+Devanagari:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   
   <!-- SortableJS for Drag and Drop -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
   
-  <!-- Quill Rich Text Editor CSS -->
-  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <!-- TinyMCE Rich Text Editor (Word-like features) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
 
   <script>
     window.MathJax = {
@@ -26,12 +25,17 @@
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
-    body { margin: 0; padding: 0; background: #f3f4f6; }
+    :root {
+        --pdf-font: 'Mukta', sans-serif;
+        --wm-rot: -45deg; --wm-scale: 1.5; --wm-op: 0.12;
+    }
     
-    #containerA { font-family: 'Mukta', 'Poppins', sans-serif; padding: 20px; color: #111827; }
+    body { margin: 0; padding: 0; background: #f3f4f6; font-family: 'Poppins', sans-serif; }
+    
+    #containerA { padding: 20px; color: #111827; }
     #containerA .container { max-width: 1450px; margin: 0 auto; }
 
-    /* LAYOUT RE-ARRANGED: Editor on Left, Settings/Buttons on Right */
+    /* LAYOUT: Editor on Left, Settings/Buttons on Right */
     #containerA .dashboard-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; margin-bottom: 20px; }
     #containerA .panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
     
@@ -39,14 +43,20 @@
     #containerA .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #374151; }
     #containerA .form-control { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; box-sizing: border-box; }
     
-    #containerA .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-family: 'Poppins', sans-serif;}
+    #containerA .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-family: inherit;}
     #containerA .btn:hover { opacity: 0.9; }
     #containerA .btn-primary { background: #2563eb; color: white; }
     #containerA .btn-success { background: #10b981; color: white; }
     #containerA .btn-danger { background: #ef4444; color: white; }
     #containerA .btn-dark { background: #374151; color: white; }
     
-    #containerA .chapter-list-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; cursor: pointer; transition: 0.3s; }
+    /* DROPDOWN MENU STYLE FOR CHAPTER LIST */
+    details.chapter-dropdown { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; }
+    details.chapter-dropdown summary { padding: 12px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; outline: none; }
+    details.chapter-dropdown summary::-webkit-details-marker { display: none; }
+    details.chapter-dropdown .dropdown-content { padding: 10px; border-top: 1px solid #cbd5e1; max-height: 250px; overflow-y: auto; }
+    
+    #containerA .chapter-list-item { background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);}
     #containerA .chapter-list-item:hover { background: #eff6ff; border-color: #93c5fd; }
     
     .sortable-ghost { opacity: 0.4; background: #e2e8f0 !important; }
@@ -55,9 +65,8 @@
     #containerA .preview-area { background: white; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); padding: 20px; overflow-x: auto; scroll-behavior: smooth; }
     
     /* PDF PAGE LAYOUT */
-    #containerA .page { width: 794px; height: 1123px; background: white; margin: 20px auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; font-size: 15px; line-height: 1.4; }
+    #containerA .page { width: 794px; height: 1123px; background: white; margin: 20px auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; line-height: 1.4; font-family: var(--pdf-font) !important; font-size: 15px; }
 
-    :root { --wm-rot: -45deg; --wm-scale: 1.5; --wm-op: 0.12; }
     #containerA .watermark { position: absolute; top: 50%; left: 50%; width: 350px; transform: translate(-50%, -50%) rotate(var(--wm-rot)) scale(var(--wm-scale)); opacity: var(--wm-op); z-index: 9999; pointer-events: none; }
 
     #containerA .page-header, #containerA .strip, #containerA .page-title, #containerA .running-header, #containerA .header-line, #containerA .content-area, #containerA .middleLine, #containerA .bottomLine, #containerA .page-footer { position: relative; z-index: 2; }
@@ -66,43 +75,41 @@
     #containerA .strip { position: absolute; top: 0; left: 0; width: 55px; height: 140px; background: #dcdcdc; z-index: 2; }
     
     #containerA .page-title { position: absolute; top: 70px; left: 60px; right: 60px; transform: translateY(-50%); text-align: center; font-weight: 700; color: #1e2937; font-size: 26px; line-height: 1.3; margin: 0; max-height: 80px; overflow: hidden; }
-    #containerA .running-header { position: absolute; top: 105px; left: 60px; right: 60px; font-size: 14px; font-weight: 700; color: #222; z-index: 2;}
+    #containerA .running-header { position: absolute; top: 105px; left: 60px; right: 60px; font-size: 14px; font-weight: 700; color: #222; z-index: 2; font-family: 'Poppins', sans-serif;}
     #containerA .running-left { float: left; }
-    #containerA .running-right { float: right; font-family: 'Poppins', sans-serif;}
+    #containerA .running-right { float: right; }
     #containerA .header-line { position:absolute; top: 130px; left: 60px; right: 60px; height: 2px; background: #000; z-index: 2;}
     
-    /* TWO COLUMNS (ORIGINAL UI) */
     #containerA .content-area { position: absolute; top: 160px; bottom: 100px; left: 60px; right: 60px; display: flex; gap: 40px; }
     #containerA .col { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
     #containerA .middleLine { position: absolute; top: 160px; bottom: 100px; left: 50%; width: 2px; background: #000; z-index: 2; }
     #containerA .bottomLine { position: absolute; bottom: 80px; left: 60px; right: 60px; border-top: 2px solid #000; z-index: 2;}
 
-    /* NOTES STYLING - BEAUTIFUL QUOTE BOX ADDED */
+    /* NOTES STYLING - FULL BLACK QUOTE BOX */
     #containerA .notes h1, #containerA .notes h2, #containerA .notes h3 { font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 16px 0; padding: 10px 16px; background: #000000; border-radius: 6px; display: inline-block; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
     #containerA .notes p { margin-top: 0; margin-bottom: 12px; }
     #containerA .notes ul, #containerA .notes ol { margin-top: 0; margin-bottom: 12px; padding-left: 20px; }
     
-    /* Beautiful Quote Box (Blockquote) */
-    #containerA .notes blockquote { border-left: 5px solid #2563eb; background: #eff6ff; padding: 12px 16px; margin: 12px 0; font-style: italic; border-radius: 0 8px 8px 0; color: #1e3a8a; font-weight: 600; }
+    #containerA .notes img { max-width: 100%; height: auto; display: block; margin: 8px 0; border-radius: 6px; }
+    
+    /* Perfect Black Quote Box */
+    #containerA .notes blockquote { border-left: 5px solid #000000; background: #f9fafb; padding: 12px 16px; margin: 12px 0; font-style: italic; border-radius: 0 8px 8px 0; color: #000000; font-weight: 600; }
     
     #containerA .notes table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; background: #fff; }
-    #containerA .notes th, #containerA .notes td { border: 1px solid #9ca3af; padding: 8px 10px; text-align: left; }
-    #containerA .notes th { background: #e5e7eb; font-weight: 700; color: #1f2937; }
-    #containerA .notes tr:nth-child(even) { background-color: #f9fafb; }
+    #containerA .notes th, #containerA .notes td { border: 1px solid #4b5563; padding: 8px 10px; text-align: left; }
+    #containerA .notes th { background: #e5e7eb; font-weight: 700; color: #111827; }
     
     #containerA .qbox { margin-bottom: 6px; font-weight: 600; }
     #containerA .opt { margin-left: 16px; margin-bottom: 4px; }
     #containerA .exp { margin: 8px 0 12px; padding: 10px 14px; border: 1px solid #9ca3af; border-radius: 8px; background: #f9fafb; font-size: 14px; line-height: 1.5; text-align: justify; }
 
     #containerA .index-page .page-header { height: 160px; background: #e6e6e6; }
-    #containerA .index-page .page-title { top: 80px; transform: translateY(-50%); font-size: 32px; background: #333; color: white; padding: 12px 50px; border-radius: 8px; left: 50%; transform: translate(-50%, -50%); width: auto; }
+    #containerA .index-page .page-title { top: 80px; transform: translateY(-50%); font-size: 32px; background: #333; color: white; padding: 12px 50px; border-radius: 8px; left: 50%; transform: translate(-50%, -50%); width: auto; font-family: 'Poppins', sans-serif;}
     #containerA .index-page .content-area { top: 170px; left: 60px; right: 60px; display: block; }
     #containerA .index-page table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 16px; }
     #containerA .index-page th, #containerA .index-page td { border: 1px solid #888; padding: 10px; text-align: center; }
     #containerA .index-page th { background: #d0d0d0; font-weight: bold; }
     #containerA .index-page td:nth-child(2) { text-align: left; padding-left: 18px; }
-    
-    .ql-container { font-family: 'Mukta', 'Poppins', sans-serif !important; font-size: 16px !important; }
 
     @media print {
         body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -118,7 +125,7 @@
 
 <div id="containerA">
     <div class="container">
-      <h1 style="text-align:center; margin-top:0; margin-bottom:20px; font-family: 'Poppins', sans-serif;">Book Generator - Mockrise</h1>
+      <h1 style="text-align:center; margin-top:0; margin-bottom:20px;">Book Generator - Mockrise</h1>
 
       <div class="dashboard-grid">
         
@@ -137,9 +144,9 @@
           </div>
           
           <div class="form-group">
-            <label>चैप्टर के नोट्स (Rich Text Editor)</label>
-            <!-- Editor height increased for better view -->
-            <div id="editor-container" style="height: 280px; background: white; border-bottom-left-radius:6px; border-bottom-right-radius:6px;"></div>
+            <label>चैप्टर के नोट्स (Word-like Editor)</label>
+            <!-- TinyMCE Textarea -->
+            <textarea id="chapNotes" placeholder="यहाँ नोट्स बनाएँ..."></textarea>
           </div>
           
           <div class="form-group">
@@ -159,42 +166,61 @@
 
         <!-- RIGHT PANEL (Settings & Export/PDF Buttons) -->
         <div class="panel">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-              <h3 style="margin:0;"><i class="fas fa-list"></i> चैप्टर लिस्ट (<span id="chapCount">0</span>)</h3>
-          </div>
-          <p style="font-size: 12px; color: #6b7280; margin-top: 0;">(क्रम बदलने के लिए ड्रैग एंड ड्रॉप करें)</p>
           
-          <div id="chapterList" style="min-height: 120px; max-height: 200px; overflow-y: auto; margin-bottom: 15px;"></div>
+          <!-- DROPDOWN CHAPTER LIST -->
+          <details class="chapter-dropdown" open>
+            <summary>
+                <span><i class="fas fa-list"></i> चैप्टर लिस्ट (<span id="chapCount">0</span>)</span>
+                <i class="fas fa-chevron-down" style="font-size: 12px; color:#64748b;"></i>
+            </summary>
+            <div class="dropdown-content" id="chapterList">
+                <p style="color:#888; font-size:13px; margin:0;">अभी कोई चैप्टर नहीं जोड़ा गया है।</p>
+            </div>
+          </details>
           
-          <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 15px 0;">
-
-          <!-- MOVED: Book Settings -->
+          <!-- Book Settings -->
           <div class="form-group" style="background: #eff6ff; padding: 12px; border: 1px solid #93c5fd; border-radius: 8px;">
-            <label style="color:#1e3a8a;"><i class="fas fa-cog"></i> बुक सेटिंग्स</label>
-            <label style="font-size: 12px; color:#475569; font-weight: normal; margin-top:6px;">Answer Key Position:</label>
-            <select id="ansStyle" class="form-control" onchange="saveToLocal(); previewBook();" style="padding:6px; font-size:13px;">
-                <option value="inline">प्रश्न के ठीक नीचे (Inline)</option>
-                <option value="end">चैप्टर के अंत में (Answer Key)</option>
-            </select>
+            <label style="color:#1e3a8a; font-size:16px;"><i class="fas fa-cog"></i> बुक सेटिंग्स</label>
+            
+            <div style="margin-top:10px;">
+                <label style="font-size: 13px; color:#475569; font-weight: normal;">Hindi Font (फ़ॉन्ट चुनें):</label>
+                <select id="pdfFont" class="form-control" onchange="updateSettings()" style="padding:6px; font-size:13px; font-family:inherit;">
+                    <option value="'Mukta', sans-serif">1. Mukta (Default)</option>
+                    <option value="'Kalam', cursive">2. Kalam (Handwriting)</option>
+                    <option value="'Yatra One', system-ui">3. Yatra One (Bold Display)</option>
+                    <option value="'Hind', sans-serif">4. Hind (Clean & Modern)</option>
+                    <option value="'Rozha One', serif">5. Rozha One (Thick Serif)</option>
+                    <option value="'Noto Sans Devanagari', sans-serif">6. Noto Sans (Google)</option>
+                    <option value="'Tiro Devanagari Hindi', serif">7. Tiro Devanagari (Classic)</option>
+                </select>
+            </div>
+
+            <div style="margin-top:10px;">
+                <label style="font-size: 13px; color:#475569; font-weight: normal;">Answer Key Position:</label>
+                <select id="ansStyle" class="form-control" onchange="updateSettings()" style="padding:6px; font-size:13px;">
+                    <option value="inline">प्रश्न के ठीक नीचे (Inline)</option>
+                    <option value="end">चैप्टर के अंत में (Answer Key)</option>
+                </select>
+            </div>
           </div>
 
-          <!-- MOVED: Custom Watermark -->
+          <!-- Custom Watermark -->
           <div class="form-group" style="background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
             <label><i class="fas fa-image"></i> कस्टम वॉटरमार्क</label>
             <input type="file" id="logoUpload" class="form-control" accept="image/*" onchange="handleLogoUpload()" style="padding:4px; font-size:12px; margin-bottom:8px;">
             <div style="display: grid; gap: 8px;">
               <div>
                 <label style="font-size: 12px; color:#475569;">Rotation: <b id="rotVal">-45°</b></label>
-                <input type="range" id="wmRotation" min="-180" max="180" value="-45" style="width:100%" oninput="updateWatermark()">
+                <input type="range" id="wmRotation" min="-180" max="180" value="-45" style="width:100%" oninput="updateSettings()">
               </div>
               <div style="display: flex; gap: 10px;">
                 <div style="flex:1;">
                     <label style="font-size: 12px; color:#475569;">Zoom: <b id="zoomVal">1.5x</b></label>
-                    <input type="range" id="wmZoom" min="0.5" max="4.0" step="0.1" value="1.5" style="width:100%" oninput="updateWatermark()">
+                    <input type="range" id="wmZoom" min="0.5" max="4.0" step="0.1" value="1.5" style="width:100%" oninput="updateSettings()">
                 </div>
                 <div style="flex:1;">
                     <label style="font-size: 12px; color:#475569;">Opacity: <b id="opVal">0.12</b></label>
-                    <input type="range" id="wmOpacity" min="0.01" max="1.0" step="0.01" value="0.12" style="width:100%" oninput="updateWatermark()">
+                    <input type="range" id="wmOpacity" min="0.01" max="1.0" step="0.01" value="0.12" style="width:100%" oninput="updateSettings()">
                 </div>
               </div>
             </div>
@@ -210,12 +236,9 @@
             
             <button class="btn btn-primary" onclick="previewBook()" style="font-size:15px; padding:12px;"><i class="fas fa-eye"></i> Preview Book</button>
             
-            <button class="btn btn-success" onclick="generateOptimizedPDF()" id="pdfBtn" style="background: #059669; font-size: 13px;">
-                <i class="fas fa-file-image"></i> Download Image PDF
-            </button>
-
-            <button class="btn btn-dark" onclick="window.print()" style="background: #4f46e5; font-size: 13px;">
-                <i class="fas fa-file-pdf"></i> Download Text PDF
+            <!-- ONLY TEXT PDF BUTTON KEPT -->
+            <button class="btn btn-success" onclick="window.print()" style="font-size: 15px; padding:12px;">
+                <i class="fas fa-file-pdf"></i> Download PDF (Selectable Text)
             </button>
             
             <button class="btn btn-danger" onclick="clearAll()"><i class="fas fa-trash"></i> सब डिलीट करें</button>
@@ -227,30 +250,37 @@
     </div>
 </div>
 
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script>
-// Cleaned up toolbar with exactly what is needed (Quote box added, bulb/extra icons removed)
-var quill = new Quill('#editor-container', {
-  theme: 'snow',
-  modules: {
-      toolbar: [
-          [{ 'header': [1, 2, 3, false] }],
-          ['bold', 'italic', 'underline'],
-          ['blockquote'], // This is the Quote Box icon
-          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-          [{ 'color': [] }, { 'background': [] }],
-          [{ 'align': [] }]
-      ]
-  },
-  placeholder: 'यहाँ अपने नोट्स टाइप करें या कॉपी-पेस्ट करें...'
+// ==========================================
+// TINYMCE ADVANCED EDITOR INITIALIZATION
+// ==========================================
+tinymce.init({
+  selector: '#chapNotes',
+  plugins: 'image table lists link preview',
+  toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | table image | blockquote',
+  height: 350,
+  menubar: false,
+  branding: false,
+  content_style: 'body { font-family:Mukta,sans-serif; font-size:16px; } blockquote { border-left: 5px solid #000; padding: 10px; background: #f9fafb; color: #000; } img {max-width:100%; height:auto;}',
+  
+  // Advanced Base64 Image Uploader allows drag-resize locally
+  images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
+    resolve("data:" + blobInfo.blob().type + ";base64," + blobInfo.base64());
+  }),
+  
+  setup: function (editor) {
+    editor.on('init', function (e) {
+      loadFromLocal(); // Load data only when editor is fully ready
+    });
+  }
 });
 
 let bookData = { chapters: [] };
 let editingIndex = -1; 
 let customLogoBase64 = "";
 
+// Drag and Drop functionality
 document.addEventListener('DOMContentLoaded', function() {
-    loadFromLocal();
     var el = document.getElementById('chapterList');
     new Sortable(el, {
         animation: 150, handle: '.drag-handle',
@@ -285,7 +315,8 @@ function importProject(event) {
     reader.readAsText(file);
 }
 
-function updateWatermark() {
+function updateSettings() {
+    // Watermark updates
     const rot = document.getElementById('wmRotation').value;
     const zoom = document.getElementById('wmZoom').value;
     const op = document.getElementById('wmOpacity').value;
@@ -295,7 +326,13 @@ function updateWatermark() {
     document.documentElement.style.setProperty('--wm-rot', rot + 'deg');
     document.documentElement.style.setProperty('--wm-scale', zoom);
     document.documentElement.style.setProperty('--wm-op', op);
+    
+    // Font updates
+    const fontVal = document.getElementById('pdfFont').value;
+    document.documentElement.style.setProperty('--pdf-font', fontVal);
+    
     saveToLocal();
+    if(bookData.chapters.length > 0) previewBook();
 }
 
 function updateBrandText() {
@@ -312,6 +349,7 @@ function saveToLocal() {
     localStorage.setItem('wmOp', document.getElementById('wmOpacity').value);
     localStorage.setItem('mockriseBrand', document.getElementById('brandText').value);
     localStorage.setItem('m_ans', document.getElementById('ansStyle').value);
+    localStorage.setItem('m_font', document.getElementById('pdfFont').value);
 }
 
 function loadFromLocal() {
@@ -325,8 +363,9 @@ function loadFromLocal() {
     if (localStorage.getItem('wmZoom') !== null) document.getElementById('wmZoom').value = localStorage.getItem('wmZoom');
     if (localStorage.getItem('wmOp') !== null) document.getElementById('wmOpacity').value = localStorage.getItem('wmOp');
     if (localStorage.getItem('m_ans')) document.getElementById('ansStyle').value = localStorage.getItem('m_ans');
+    if (localStorage.getItem('m_font')) document.getElementById('pdfFont').value = localStorage.getItem('m_font');
 
-    updateWatermark(); updateChapterUI();
+    updateSettings(); updateChapterUI();
     if(bookData.chapters.length > 0) previewBook();
 }
 
@@ -343,7 +382,7 @@ function updateChapterUI() {
   const list = document.getElementById('chapterList');
   document.getElementById('chapCount').innerText = bookData.chapters.length;
   list.innerHTML = '';
-  if (bookData.chapters.length === 0) { list.innerHTML = '<p style="color:#888; font-size:14px;">अभी कोई चैप्टर नहीं जोड़ा गया है।</p>'; return; }
+  if (bookData.chapters.length === 0) { list.innerHTML = '<p style="color:#888; font-size:13px; margin:0;">अभी कोई चैप्टर नहीं जोड़ा गया है।</p>'; return; }
   bookData.chapters.forEach((ch, idx) => {
     list.innerHTML += `<div class="chapter-list-item" id="list-item-${idx}" onclick="loadChapterToEdit(${idx})" title="क्लिक करके एडिट करें">
         <div><i class="fas fa-grip-vertical drag-handle"></i> <span>${idx + 1}. ${ch.title}</span></div>
@@ -355,30 +394,33 @@ function updateChapterUI() {
 function loadChapterToEdit(idx) {
   editingIndex = idx; const ch = bookData.chapters[idx];
   document.getElementById('chapTitle').value = ch.title;
-  quill.root.innerHTML = ch.notes || '';
+  
+  // Set TinyMCE Content
+  tinymce.get('chapNotes').setContent(ch.notes || '');
+  
   if (ch.questions && ch.questions.length > 0) { document.getElementById('chapQuestions').value = JSON.stringify(ch.questions, null, 2); } 
   else { document.getElementById('chapQuestions').value = ''; }
+  
   document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> चैप्टर अपडेट करें';
   const saveBtn = document.getElementById('saveBtn'); saveBtn.innerHTML = '<i class="fas fa-check"></i> अपडेट सेव करें'; saveBtn.classList.replace('btn-primary', 'btn-success');
   document.getElementById('cancelEditBtn').style.display = 'block';
   
-  const targetPage = document.getElementById(`chapter-page-${idx}`);
-  if(targetPage) {
-      targetPage.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      document.querySelectorAll('#containerA .chapter-list-item').forEach((el, i) => {
-          el.style.borderLeft = i === idx ? '4px solid #10b981' : '1px solid #e2e8f0';
-          el.style.background = i === idx ? '#ecfdf5' : '#f8fafc';
-      });
-  }
+  document.querySelectorAll('#containerA .chapter-list-item').forEach((el, i) => {
+      el.style.borderLeft = i === idx ? '4px solid #10b981' : '1px solid #e2e8f0';
+      el.style.background = i === idx ? '#ecfdf5' : '#ffffff';
+  });
 }
 
 function cancelEdit() {
   editingIndex = -1;
-  document.getElementById('chapTitle').value = ''; quill.root.innerHTML = ''; document.getElementById('chapQuestions').value = '';
+  document.getElementById('chapTitle').value = ''; 
+  tinymce.get('chapNotes').setContent(''); 
+  document.getElementById('chapQuestions').value = '';
+  
   document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus-circle"></i> नया चैप्टर जोड़ें';
   const saveBtn = document.getElementById('saveBtn'); saveBtn.innerHTML = '<i class="fas fa-save"></i> चैप्टर सेव करें'; saveBtn.classList.replace('btn-success', 'btn-primary');
   document.getElementById('cancelEditBtn').style.display = 'none';
-  document.querySelectorAll('#containerA .chapter-list-item').forEach(el => { el.style.borderLeft = '1px solid #e2e8f0'; el.style.background = '#f8fafc'; });
+  document.querySelectorAll('#containerA .chapter-list-item').forEach(el => { el.style.borderLeft = '1px solid #e2e8f0'; el.style.background = '#ffffff'; });
 }
 
 function deleteChapter(idx) {
@@ -391,8 +433,11 @@ function clearAll() {
 
 function addChapter() {
   const cTitle = document.getElementById('chapTitle').value.trim();
-  let cNotes = quill.root.innerHTML;
-  if(cNotes === '<p><br></p>') cNotes = ''; 
+  
+  // Get TinyMCE Content
+  let cNotes = tinymce.get('chapNotes').getContent();
+  if(cNotes === '<p><br data-mce-bogus="1"></p>') cNotes = ''; 
+  
   let cQuestionsRaw = document.getElementById('chapQuestions').value.trim();
 
   if(!cTitle) { alert("कृपया चैप्टर का नाम दर्ज करें!"); return; }
@@ -408,12 +453,13 @@ function addChapter() {
   }
 
   if (editingIndex > -1) { bookData.chapters[editingIndex] = { title: cTitle, notes: cNotes, questions: uniqueQArray }; cancelEdit(); } 
-  else { bookData.chapters.push({ title: cTitle, notes: cNotes, questions: uniqueQArray }); document.getElementById('chapTitle').value = ''; quill.root.innerHTML = ''; document.getElementById('chapQuestions').value = ''; }
+  else { bookData.chapters.push({ title: cTitle, notes: cNotes, questions: uniqueQArray }); document.getElementById('chapTitle').value = ''; tinymce.get('chapNotes').setContent(''); document.getElementById('chapQuestions').value = ''; }
+  
   saveToLocal(); updateChapterUI(); previewBook(); 
 }
 
 // ==========================================
-// ORIGINAL SMART SPLIT ENGINE (BUG FIXED)
+// ORIGINAL SMART SPLIT ENGINE
 // ==========================================
 function appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, isContinuation = false, depth = 0) {
     if (depth > 20) {
@@ -441,13 +487,13 @@ function appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, isC
     }
 
     const trimmedHTML = htmlStr.trim().toLowerCase();
-    // Do not split Tables, Divs, Lists, Headings, or Blockquotes word by word. Push them to the next column.
-    if (trimmedHTML.startsWith("<table") || trimmedHTML.startsWith("<div") || trimmedHTML.startsWith("<ul") || trimmedHTML.startsWith("<ol") || trimmedHTML.startsWith("<h") || trimmedHTML.startsWith("<blockquote")) {
+    // Elements not to split
+    if (trimmedHTML.startsWith("<table") || trimmedHTML.startsWith("<div") || trimmedHTML.startsWith("<ul") || trimmedHTML.startsWith("<ol") || trimmedHTML.startsWith("<h") || trimmedHTML.startsWith("<blockquote") || trimmedHTML.startsWith("<img") || trimmedHTML.startsWith("<figure")) {
         currentTarget = nextColFunc();
         return appendWithSplit(htmlStr, baseClassName, currentTarget, nextColFunc, false, depth + 1);
     }
 
-    // Split large text paragraphs word by word
+    // Split paragraphs
     let words = htmlStr.split(" "); 
     let part = ""; 
     let fittedIndex = -1;
@@ -530,7 +576,7 @@ function previewBook() {
             }
         };
 
-        // NEW: Break Quill Notes into smaller DOM blocks before splitting! This fixes the bug.
+        // Split Editor Notes perfectly
         if (ch.notes) {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = ch.notes;
@@ -591,31 +637,6 @@ function previewBook() {
     const indexPage = createIndexPage(chapterPages); preview.insertBefore(indexPage, preview.firstChild);
 
     if (window.MathJax) { MathJax.typesetPromise([preview]).catch((err) => console.log('MathJax Error:', err.message)); }
-}
-
-async function generateOptimizedPDF() {
-    const preview = document.getElementById('preview');
-    if (!preview.innerHTML || preview.innerHTML.trim() === '') { alert("कृपया पहले 'Preview Book' पर क्लिक करें!"); return; }
-    
-    const pdfBtn = document.getElementById('pdfBtn'); 
-    pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Image PDF...'; pdfBtn.disabled = true;
-    await new Promise(r => setTimeout(r, 100));
-    
-    const pages = document.querySelectorAll('#containerA .page');
-    if (pages.length === 0) { alert("कोई पेज नहीं मिला!"); pdfBtn.innerHTML = '<i class="fas fa-file-image"></i> Download Image PDF (Original)'; pdfBtn.disabled = false; return; }
-    
-    const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
-    
-    for (let i = 0; i < pages.length; i++) {
-        if (i > 0) pdf.addPage();
-        const canvas = await html2canvas(pages[i], { scale: 2, useCORS: true, allowTaint: true, logging: false, backgroundColor: '#ffffff' });
-        const imgData = canvas.toDataURL('image/jpeg', 0.60);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-    }
-    pdf.save('Mockrise_Book_Original.pdf');
-    pdfBtn.innerHTML = '<i class="fas fa-file-image"></i> Download Image PDF (Original)'; pdfBtn.disabled = false;
 }
 </script>
 </body>
