@@ -13,7 +13,7 @@
   <!-- SortableJS for Drag and Drop -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
   
-  <!-- TinyMCE Rich Text Editor (Word-like features) -->
+  <!-- TinyMCE Rich Text Editor -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
 
   <!-- PDF Generation Libraries -->
@@ -54,7 +54,10 @@
     #containerA .btn-success { background: #10b981; color: white; }
     #containerA .btn-danger { background: #ef4444; color: white; }
     #containerA .btn-dark { background: #374151; color: white; }
-    #containerA .btn-magic { background: #8b5cf6; color: white; padding: 4px 10px; font-size: 13px; margin-left: auto; box-shadow: 0 2px 5px rgba(139,92,246,0.4); }
+    
+    /* Short & Elegant Magic Button */
+    #containerA .btn-magic { background: #8b5cf6; color: white; padding: 4px 10px; font-size: 13px; margin-left: auto; border-radius: 6px; box-shadow: 0 2px 5px rgba(139,92,246,0.3); border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600;}
+    #containerA .btn-magic:hover { background: #7c3aed; }
     
     details.chapter-dropdown { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; }
     details.chapter-dropdown summary { padding: 12px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; outline: none; }
@@ -112,6 +115,15 @@
     #containerA .index-page th, #containerA .index-page td { border: 1px solid #888; padding: 10px; text-align: center; }
     #containerA .index-page th { background: #d0d0d0; font-weight: bold; }
     #containerA .index-page td:nth-child(2) { text-align: left; padding-left: 18px; }
+
+    @media print {
+        body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .dashboard-grid, h1 { display: none !important; }
+        #containerA { padding: 0 !important; }
+        .preview-area { padding: 0 !important; margin: 0 !important; box-shadow: none !important; background: transparent !important; overflow: visible !important; }
+        .page { margin: 0 auto !important; box-shadow: none !important; border: none !important; page-break-after: always; }
+        .watermark { opacity: var(--wm-op) !important; }
+    }
   </style>
 </head>
 <body>
@@ -139,9 +151,9 @@
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <label style="margin: 0;">चैप्टर के नोट्स (Word-like Editor)</label>
-                <!-- MAGIC DEVLYS CONVERTER BUTTON -->
-                <button type="button" class="btn btn-magic" onclick="convertEditorDevlys()" title="Devlys को Unicode में बदलें">
-                    <i class="fas fa-magic"></i> MS Word (Devlys) को हिंदी में बदलें
+                <!-- SHORTENED MAGIC BUTTON -->
+                <button type="button" class="btn-magic" onclick="convertEditorDevlys()" title="MS Word Devlys को Unicode में बदलें">
+                    <i class="fas fa-magic"></i> Devlys ➔ Hindi
                 </button>
             </div>
             <textarea id="chapNotes" placeholder="यहाँ नोट्स बनाएँ..."></textarea>
@@ -239,9 +251,13 @@
             
             <button class="btn btn-primary" onclick="previewBook()" style="font-size:15px; padding:12px;"><i class="fas fa-eye"></i> Preview Book</button>
             
-            <!-- PERFECT 1-CLICK DOWNLOAD BUTTON -->
-            <button class="btn btn-success" onclick="generateOptimizedPDF()" id="pdfBtn" style="font-size: 16px; padding:12px; background: #059669;">
-                <i class="fas fa-file-pdf"></i> Download PDF (1-Click)
+            <!-- BOTH PDF BUTTONS: Text & Image (Image optimized for No Margin) -->
+            <button class="btn btn-success" onclick="generateOptimizedPDF()" id="pdfBtn" style="font-size: 15px; padding:12px; background: #059669;">
+                <i class="fas fa-file-image"></i> Download Image PDF
+            </button>
+            
+            <button class="btn btn-dark" onclick="window.print()" style="font-size: 15px; padding:12px; background: #4f46e5;">
+                <i class="fas fa-file-pdf"></i> Download Text PDF
             </button>
             
             <button class="btn btn-danger" onclick="clearAll()"><i class="fas fa-trash"></i> सब डिलीट करें</button>
@@ -690,13 +706,12 @@ async function generateOptimizedPDF() {
     const pages = document.querySelectorAll('#containerA .page');
     if (pages.length === 0) { 
         alert("कोई पेज नहीं मिला!"); 
-        pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF (1-Click)'; 
+        pdfBtn.innerHTML = '<i class="fas fa-file-image"></i> Download Image PDF'; 
         pdfBtn.disabled = false; 
         return; 
     }
     
-    // Get actual Paper Size selected by user
-    const pSize = document.getElementById('paperSize').value.toLowerCase(); // 'a4' or 'a5'
+    const pSize = document.getElementById('paperSize').value.toLowerCase();
     const pdf = new jsPDF({ unit: 'pt', format: pSize, compress: true });
     
     const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -705,11 +720,14 @@ async function generateOptimizedPDF() {
     for (let i = 0; i < pages.length; i++) {
         if (i > 0) pdf.addPage();
         
-        // Remove margins & shadows temporarily so the capture is exactly edge-to-edge
+        // Remove margins, borders, shadows for perfect edge-to-edge capture
         const originalMargin = pages[i].style.margin;
         const originalShadow = pages[i].style.boxShadow;
+        const originalBorder = pages[i].style.border;
+        
         pages[i].style.margin = '0';
         pages[i].style.boxShadow = 'none';
+        pages[i].style.border = 'none';
         
         const canvas = await html2canvas(pages[i], { 
             scale: 2, 
@@ -719,18 +737,18 @@ async function generateOptimizedPDF() {
             backgroundColor: '#ffffff' 
         });
         
-        // Restore styles back for the web preview
         pages[i].style.margin = originalMargin;
         pages[i].style.boxShadow = originalShadow;
+        pages[i].style.border = originalBorder;
         
         const imgData = canvas.toDataURL('image/jpeg', 0.85);
         
-        // Draw image starting exactly at 0,0 and filling exactly the PDF width/height
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        // Slightly bleed the image edges (-2 coordinate, +4 size) to completely eliminate all white/blank margins
+        pdf.addImage(imgData, 'JPEG', -2, -2, pdfWidth + 4, pdfHeight + 4, undefined, 'FAST');
     }
     
     pdf.save('Mockrise_Book_' + pSize.toUpperCase() + '.pdf');
-    pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF (1-Click)'; 
+    pdfBtn.innerHTML = '<i class="fas fa-file-image"></i> Download Image PDF'; 
     pdfBtn.disabled = false;
 }
 </script>
